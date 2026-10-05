@@ -1,7 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { Menu, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { tw } from "../utils/twStyles.js";
 import useAuthStore from "../store/authStore";
 import useCartStore from "../store/cartStore";
 import useWishlistStore from "../store/wishlistStore";
@@ -130,15 +128,35 @@ const Navbar = () => {
   }, [mobileMenuOpen]);
 
   const isHome = location.pathname === "/";
+  const [selectedCategory, setSelectedCategory] = useState("");
 
   return (
     <header
       ref={mobileMenuRef}
-      className={tw(`vanta-header vanta-reference-header ${isHome ? "vanta-header-home" : ""}`)}
+      className={`sticky top-0 z-50 w-full border-b border-[var(--vanta-border)] bg-[var(--vanta-surface)]/95 backdrop-blur-md transition-colors duration-200 ${
+        isHome ? "shadow-xs" : ""
+      }`}
     >
-      <div className={tw("vanta-promo")}>Free shipping on orders above ₹999</div>
+      {/* 1. TOP UTILITY ANNOUNCEMENT BAR */}
+      <div className="border-b border-[var(--vanta-border)]/60 bg-[var(--vanta-soft)]/60 text-[11px] text-[var(--vanta-muted)]">
+        <div className="mx-auto flex h-9 max-w-[1520px] items-center justify-between px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center gap-2">
+            <span className="font-semibold text-[var(--vanta-accent)]">FREE SHIPPING</span>
+            <span>•</span>
+            <span className="truncate">Express Delivery on orders over ₹2,000 | 7-Day Effortless Returns</span>
+          </div>
 
-      <div className={tw("vanta-reference-navbar")}>
+          <div className="hidden md:flex items-center gap-4 text-[11px]">
+            <span className="text-[var(--vanta-text)] font-medium">✨ Premium Handcrafted Fashion</span>
+            <span>•</span>
+            <span className="hover:text-[var(--vanta-text)] transition cursor-pointer">Support: help@vanta.com</span>
+          </div>
+        </div>
+      </div>
+
+      {/* 2. MAIN NAVBAR CONTAINER */}
+      <div className="mx-auto max-w-[1520px] px-4 sm:px-6 lg:px-8">
+        {/* Mobile Navbar Row */}
         <NavbarMobile
           mobileMenuOpen={mobileMenuOpen}
           mobileSearchOpen={mobileSearchOpen}
@@ -161,7 +179,8 @@ const Navbar = () => {
           handleLogout={handleLogout}
         />
 
-        <div className={tw("vanta-reference-navbar-inner")}>
+        {/* Desktop Navbar Row & Subnav */}
+        <div className="hidden lg:flex items-center justify-between w-full">
           <NavbarDesktop
             categories={categories}
             collectionsOpen={collectionsOpen}
@@ -170,29 +189,24 @@ const Navbar = () => {
             setNavSearch={setNavSearch}
             navigate={navigate}
             closeMobileMenu={closeMobileMenu}
+            selectedCategory={selectedCategory}
+            setSelectedCategory={setSelectedCategory}
           />
 
-          <NavbarProfile
-            user={user}
-            isAuthenticated={isAuthenticated}
-            profileOpen={profileOpen}
-            setProfileOpen={setProfileOpen}
-            theme={theme}
-            setTheme={setTheme}
-            wishlistCount={wishlistCount}
-            cartCount={cartCount}
-            handleLogout={handleLogout}
-            openAuth={openAuth}
-          />
-
-          <button
-            type="button"
-            className={tw("vanta-reference-mobile-toggle")}
-            onClick={() => setMobileMenuOpen((v) => !v)}
-            aria-label="Menu"
-          >
-            {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
-          </button>
+          <div className="self-start pt-4">
+            <NavbarProfile
+              user={user}
+              isAuthenticated={isAuthenticated}
+              profileOpen={profileOpen}
+              setProfileOpen={setProfileOpen}
+              theme={theme}
+              setTheme={setTheme}
+              wishlistCount={wishlistCount}
+              cartCount={cartCount}
+              handleLogout={handleLogout}
+              openAuth={openAuth}
+            />
+          </div>
         </div>
       </div>
     </header>

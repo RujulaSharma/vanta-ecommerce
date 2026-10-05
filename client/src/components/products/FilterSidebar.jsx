@@ -11,7 +11,6 @@ const FilterSidebar = ({
   setShowFilters,
   selectedCategory,
   parentCategory,
-  categories,
   siblingCategories = [],
   chooseCategory,
   minPrice,

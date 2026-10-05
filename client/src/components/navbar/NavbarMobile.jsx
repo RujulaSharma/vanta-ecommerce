@@ -1,4 +1,4 @@
-import { Link, NavLink, useNavigate } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import {
   ChevronDown,
   Menu,
@@ -22,7 +22,6 @@ const NavbarMobile = ({
   setCollectionsOpen,
   theme,
   setTheme,
-  categories,
   isAuthenticated,
   user,
   cartCount,

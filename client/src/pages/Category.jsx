@@ -37,14 +37,6 @@ export default function Category() {
 
   const roots = useMemo(() => getRootCategories(categories), [categories]);
 
-  const active = useMemo(() => {
-    if (!slug) return null;
-    const wanted = normalizeCategory(slug);
-    return categories.find(
-      (category) => normalizeCategory(category.slug || category.name) === wanted
-    ) || null;
-  }, [categories, slug]);
-
   if (slug) {
     return (
       <main className="min-h-screen bg-[var(--vanta-bg)] text-[var(--vanta-text)]">

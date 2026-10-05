@@ -1,4 +1,4 @@
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { tw } from "../utils/twStyles.js";
@@ -28,7 +28,6 @@ const Navbar = () => {
   const [navSearch, setNavSearch] = useState("");
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const [categories, setCategories] = useState([]);
-  const [categoriesLoading, setCategoriesLoading] = useState(true);
 
   const profileRef = useRef(null);
   const mobileMenuRef = useRef(null);
@@ -61,8 +60,6 @@ const Navbar = () => {
         if (!cancelled) setCategories(Array.isArray(list) ? list : []);
       } catch (error) {
         console.error("Failed to load navbar categories:", error);
-      } finally {
-        if (!cancelled) setCategoriesLoading(false);
       }
     };
 

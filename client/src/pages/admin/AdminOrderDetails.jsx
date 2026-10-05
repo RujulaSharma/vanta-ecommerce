@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   ArrowLeft,
   Check,
@@ -26,32 +26,26 @@ const AdminOrderDetails = () => {
   const [selectedStatus, setSelectedStatus] =
     useState("");
 
-  const loadOrder = async () => {
+  const loadOrder = useCallback(async () => {
     try {
       setLoading(true);
 
-      const data =
-        await orderService.getAdminOrderById(id);
+      const data = await orderService.getAdminOrderById(id);
 
       const loadedOrder = data.data?.order;
 
       setOrder(loadedOrder);
-      setSelectedStatus(
-        loadedOrder?.orderStatus || ""
-      );
+      setSelectedStatus(loadedOrder?.orderStatus || "");
     } catch (error) {
-      toast.error(
-        error.response?.data?.message ||
-          "Unable to load order"
-      );
+      toast.error(error.response?.data?.message || "Unable to load order");
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
 
   useEffect(() => {
     loadOrder();
-  }, [id]);
+  }, [loadOrder]);
 
   const updateStatus = async () => {
     if (!order || !selectedStatus) return;

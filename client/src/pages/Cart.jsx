@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   Minus,
@@ -27,35 +27,29 @@ const Cart = () => {
     (state) => state.setCart
   );
 
-  const loadCart = async () => {
+  const loadCart = useCallback(async () => {
     try {
       setLoading(true);
 
-      const data =
-        await cartService.getCart();
+      const data = await cartService.getCart();
 
       const loadedCart = data.data?.cart || null;
       setCart(loadedCart);
       setGlobalCart(loadedCart);
     } catch (error) {
       if (error.response?.status === 401) {
-        toast.error(
-          "Please login to view your cart"
-        );
+        toast.error("Please login to view your cart");
       } else {
-        toast.error(
-          error.response?.data?.message ||
-            "Unable to load cart"
-        );
+        toast.error(error.response?.data?.message || "Unable to load cart");
       }
     } finally {
       setLoading(false);
     }
-  };
+  }, [setGlobalCart]);
 
   useEffect(() => {
     loadCart();
-  }, []);
+  }, [loadCart]);
 
   const updateQuantity = async (
     productId,

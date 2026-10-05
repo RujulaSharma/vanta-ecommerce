@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, Check, Sparkles } from "lucide-react";
+import { ArrowRight, Sparkles } from "lucide-react";
 import heroImage from "../assets/category/hero.jpg";
 const values = [
   {
@@ -30,32 +30,32 @@ const About = () => {
     <main className="vanta-about-page min-h-screen bg-[var(--vanta-bg)] text-[var(--vanta-text)]">
       {/* Hero */}
       <section className="relative isolate overflow-hidden border-b border-[var(--vanta-border)]">
-      <img
-    src={heroImage}
-    alt="Vanta bags"
-    className="absolute inset-0 -z-20 h-full w-full object-cover object-center"
-  />
+        <img
+          src={heroImage}
+          alt="Vanta bags"
+          className="absolute inset-0 -z-20 h-full w-full object-cover object-center"
+        />
         <div className="absolute inset-0 -z-10 bg-black/65" />
         <div className="absolute inset-0 -z-10 bg-gradient-to-r from-black via-black/55 to-black/15" />
 
         <div className="mx-auto flex min-h-[78vh] max-w-[1440px] items-end px-6 pb-16 pt-32 sm:px-10 lg:px-16">
-          <div className="max-w-4xl">
-            <p className="mb-5 text-[11px] font-semibold uppercase tracking-[0.35em] text-[var(--vanta-accent)]">
+          <div className="max-w-4xl text-white">
+            <p className="mb-5 text-[11px] font-semibold uppercase tracking-[0.35em] text-[#d5ae65]">
               VANTA / ABOUT
             </p>
-            <h1 className="max-w-4xl font-serif text-5xl leading-[0.95] text-[9px] text-[var(--vanta-muted)] tracking-[-0.04em] sm:text-7xl lg:text-[104px]">
+            <h1 className="max-w-4xl font-serif text-5xl leading-[0.95] tracking-[-0.04em] sm:text-7xl lg:text-[96px]">
               Carry less noise.
               <br />
               Carry what matters.
             </h1>
-            <p className="mt-8 max-w-xl text-sm leading-7 text-[var(--vanta-muted)] sm:text-base">
+            <p className="mt-8 max-w-xl text-sm leading-7 text-white/80 sm:text-base">
               Vanta is a modern bag label built around one simple idea:
               everyday carry should feel considered, useful and unmistakably
               yours.
             </p>
             <Link
               to="/category"
-              className="mt-9 inline-flex items-center gap-3 border border-[var(--vanta-border)] text-[var(--vanta-muted)] px-5 py-3 text-xs font-semibold uppercase tracking-[0.2em] transition hover:bg-[var(--vanta-text)] hover:text-[var(--vanta-bg) ]]"
+              className="mt-9 inline-flex items-center gap-3 border border-white/40 px-6 py-3.5 text-xs font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-white hover:text-black"
             >
               Explore the collection
               <ArrowRight size={15} />

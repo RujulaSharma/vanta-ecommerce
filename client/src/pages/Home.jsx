@@ -4,6 +4,8 @@ import { ArrowRight, Heart, Star, ShoppingBag } from "lucide-react";
 import { Link } from "react-router-dom";
 import productService from "../services/productService";
 import categoryService from "../services/categoryService";
+import useWishlistStore from "../store/wishlistStore";
+import toast from "react-hot-toast";
 import heroImage from "../assets/category/hero.jpg";
 import {
   categoryImage,
@@ -32,6 +34,9 @@ const reviews = [
 export default function Home() {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
+
+  const wishlistItems = useWishlistStore((state) => state.items);
+  const toggleWishlist = useWishlistStore((state) => state.toggle);
 
   useEffect(() => {
     Promise.allSettled([
@@ -224,40 +229,52 @@ export default function Home() {
               "grid grid-cols-2 gap-x-3 gap-y-7 sm:grid-cols-3 sm:gap-x-4 sm:gap-y-9 lg:grid-cols-4 xl:grid-cols-4"
             )}
           >
-            {products.slice(0, 8).map((product, index) => (
-              <Link
-                key={product._id}
-                to={`/products/${product.slug}`}
-                className={tw("group min-w-0")}
-              >
-                <div className={tw("relative aspect-[0.82] overflow-hidden rounded-md bg-[#f2f1ee]")}>
-                  {product.images?.[0] ? (
-                    <img
-                      src={product.images[0]}
-                      alt={product.name}
-                      className={tw("h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]")}
-                    />
-                  ) : (
-                    <span className={tw("flex h-full items-center justify-center font-serif text-2xl")}>
-                      VANTA
-                    </span>
-                  )}
+            {products.slice(0, 8).map((product, index) => {
+              const isWishlisted = wishlistItems.some((item) => item._id === product._id);
 
-                  <span className={tw("absolute left-3 top-3 text-[9px] font-semibold tracking-[0.16em] text-black/50")}>
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
-
-                  <button
-                    type="button"
-                    aria-label="Wishlist"
-                    onClick={(event) => event.preventDefault()}
-                    className={tw(
-                      "absolute right-2.5 top-2.5 flex h-8 w-8 items-center justify-center rounded-full bg-white/90 shadow-sm transition hover:bg-white"
+              return (
+                <Link
+                  key={product._id}
+                  to={`/products/${product.slug}`}
+                  className={tw("group min-w-0")}
+                >
+                  <div className={tw("relative aspect-[0.82] overflow-hidden rounded-md bg-[#f2f1ee]")}>
+                    {product.images?.[0] ? (
+                      <img
+                        src={product.images[0]}
+                        alt={product.name}
+                        className={tw("h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]")}
+                      />
+                    ) : (
+                      <span className={tw("flex h-full items-center justify-center font-serif text-2xl")}>
+                        VANTA
+                      </span>
                     )}
-                  >
-                    <Heart size={15} />
-                  </button>
-                </div>
+
+                    <span className={tw("absolute left-3 top-3 text-[9px] font-semibold tracking-[0.16em] text-black/50")}>
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+
+                    <button
+                      type="button"
+                      aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+                      onClick={(event) => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        const added = toggleWishlist(product);
+                        toast.success(added ? "Added to wishlist" : "Removed from wishlist");
+                      }}
+                      className={tw(
+                        `absolute right-2.5 top-2.5 flex h-8 w-8 items-center justify-center rounded-full shadow-sm transition ${
+                          isWishlisted
+                            ? "bg-black text-white"
+                            : "bg-white/90 text-stone-900 hover:bg-white"
+                        }`
+                      )}
+                    >
+                      <Heart size={15} fill={isWishlisted ? "currentColor" : "none"} />
+                    </button>
+                  </div>
 
                 <div className={tw("pt-3")}>
                   <h3 className={tw("truncate text-xs font-medium sm:text-sm")}>
@@ -281,8 +298,9 @@ export default function Home() {
                   </div>
                 </div>
               </Link>
-            ))}
-          </div>
+            );
+          })}
+        </div>
 
           {!products.length && (
             <div className={tw("py-16 text-center text-sm text-[var(--vanta-muted)]")}>

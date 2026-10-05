@@ -87,7 +87,7 @@ const AdminProducts = () => {
 
   const openCreateForm = () => {
     setEditingProduct(null);
-    setForm(emptyForm);
+    setForm(emptyProductForm);
     setShowForm(true);
   };
 
@@ -124,7 +124,7 @@ const AdminProducts = () => {
 
     setShowForm(false);
     setEditingProduct(null);
-    setForm(emptyForm);
+    setForm(emptyProductForm);
   };
 
   const handleSubmit = async (event) => {

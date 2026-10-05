@@ -1,7 +1,9 @@
-import { tw } from "./utils/twStyles.js";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Link } from "react-router-dom";
 
 import MainLayout from "./layouts/MainLayout";
+import ProtectedRoute from "./components/ProtectedRoute";
+import AdminRoute from "./components/AdminRoute";
+import AdminLayout from "./layouts/AdminLayout";
 
 import Home from "./pages/Home";
 import Products from "./pages/Products";
@@ -18,8 +20,6 @@ import Addresses from "./pages/Addresses";
 import OrderSuccess from "./pages/OrderSuccess";
 import Wishlist from "./pages/Wishlist";
 import RecentlyViewed from "./pages/RecentlyViewed";
-import AdminLayout from "./layouts/AdminLayout";
-import AdminRoute from "./components/AdminRoute";
 
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminOrders from "./pages/admin/AdminOrders";
@@ -30,83 +30,59 @@ function App() {
   return (
     <Routes>
       <Route element={<MainLayout />}>
+        {/* Public Routes */}
         <Route path="/" element={<Home />} />
-
         <Route path="/products" element={<Products />} />
         <Route path="/category" element={<Category />} />
         <Route path="/category/:slug" element={<Category />} />
-
-        <Route
-          path="/products/:slug"
-          element={<ProductDetails />}
-        />
+        <Route path="/products/:slug" element={<ProductDetails />} />
         <Route path="/about" element={<About />} />
-
         <Route path="/cart" element={<Cart />} />
         <Route path="/wishlist" element={<Wishlist />} />
         <Route path="/recently-viewed" element={<RecentlyViewed />} />
-
         <Route path="/login" element={<AuthEntry mode="login" />} />
-
         <Route path="/register" element={<AuthEntry mode="register" />} />
 
-        <Route path="/checkout" element={<Checkout />} />
+        {/* User Protected Routes */}
+        <Route element={<ProtectedRoute />}>
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/orders/:id" element={<OrderDetails />} />
+          <Route path="/account" element={<Account />} />
+          <Route path="/account/orders" element={<Orders />} />
+          <Route path="/account/addresses" element={<Addresses />} />
+          <Route path="/order-success/:orderId" element={<OrderSuccess />} />
+        </Route>
 
-        {/* Orders */}
-        <Route
-          path="/orders/:id"
-          element={<OrderDetails />}
-        />
-
-        <Route
-          path="/account/orders"
-          element={<Orders />}
-        />
-
-        {/* Account */}
-        <Route
-          path="/account"
-          element={<Account />}
-        />
-
-        <Route
-          path="/account/addresses"
-          element={<Addresses />}
-        />
-
-        {/* Payment success */}
-        <Route
-          path="/order-success/:orderId"
-          element={<OrderSuccess />}
-        />
+        {/* Admin Protected Routes */}
         <Route element={<AdminRoute />}>
-  <Route element={<AdminLayout />}>
-    <Route
-      path="/admin"
-      element={<AdminDashboard />}
-    />
+          <Route element={<AdminLayout />}>
+            <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/admin/orders" element={<AdminOrders />} />
+            <Route path="/admin/orders/:id" element={<AdminOrderDetails />} />
+            <Route path="/admin/products" element={<AdminProducts />} />
+          </Route>
+        </Route>
 
-    <Route
-      path="/admin/orders"
-      element={<AdminOrders />}
-    />
-
-    <Route
-      path="/admin/orders/:id"
-      element={<AdminOrderDetails />}
-    />
-
-    <Route
-      path="/admin/products"
-      element={<AdminProducts />}
-    />
-  </Route>
-</Route>
-
-        <Route path="*" element={<main className="mx-auto max-w-3xl px-5 py-24 text-center"><p className={tw("vanta-eyebrow")}>404</p><h1 className={tw("vanta-serif mt-4 text-6xl")}>Page not found.</h1><a href="/" className="mt-8 inline-flex bg-stone-950 px-6 py-3 text-sm font-semibold text-white">Return home</a></main>} />
+        {/* 404 Fallback */}
+        <Route
+          path="*"
+          element={
+            <main className="mx-auto max-w-3xl px-5 py-24 text-center">
+              <p className="text-xs font-bold uppercase tracking-[0.28em] text-[var(--vanta-muted)]">404</p>
+              <h1 className="mt-4 font-serif text-5xl sm:text-6xl">Page not found.</h1>
+              <p className="mt-4 text-sm text-[var(--vanta-muted)]">The page you are looking for does not exist or has moved.</p>
+              <Link
+                to="/"
+                className="mt-8 inline-flex bg-stone-950 px-7 py-3.5 text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-stone-800 dark:bg-stone-100 dark:text-stone-900"
+              >
+                Return home
+              </Link>
+            </main>
+          }
+        />
       </Route>
     </Routes>
   );
 }
 
-export default App; 
+export default App;

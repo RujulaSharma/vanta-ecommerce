@@ -11,8 +11,6 @@ import authenticateUser from "../middleware/authenticateUser.js";
 import requireAdmin from "../middleware/requireAdmin.js";
 import { authLimiter } from "../middleware/rateLimiter.js";
 
-console.log("🔥 AUTH ROUTES LOADED");
-
 const router = express.Router();
 
 router.post("/register",authLimiter, register);

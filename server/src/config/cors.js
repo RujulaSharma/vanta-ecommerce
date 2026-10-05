@@ -1,8 +1,13 @@
 const allowedOrigins = [
-    "http://localhost:5173",
-    "http://localhost:5174",
-    "https://vanta-bags-ecomm-1.onrender.com",
-  ];
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "http://localhost:3000",
+  "https://vanta-bags-ecomm-1.onrender.com",
+];
+
+if (process.env.CLIENT_URL && !allowedOrigins.includes(process.env.CLIENT_URL)) {
+  allowedOrigins.push(process.env.CLIENT_URL);
+}
   
   export const corsOptions = {
     origin: function (origin, callback) {

@@ -4,11 +4,14 @@ import Product from "../models/product.js";
 import Order from "../models/order.js";
 
 export const getProductReviews = async (req, res) => {
+  if (!mongoose.isValidObjectId(req.params.productId)) {
+    return res.status(400).json({ success: false, message: "Invalid product ID" });
+  }
   const reviews = await Review.find({ product: req.params.productId })
     .populate("user", "name")
     .sort({ createdAt: -1 });
   const stats = await Review.aggregate([
-    { $match: { product: new mongoose.Types.ObjectId(req.params.productId) } },
+    { $match: { product: new mongoose.Types.ObjectId(String(req.params.productId)) } },
     { $group: { _id: null, average: { $avg: "$rating" }, count: { $sum: 1 } } },
   ]);
   return res.json({ success: true, data: { reviews, average: stats[0]?.average || 0, count: stats[0]?.count || 0 } });

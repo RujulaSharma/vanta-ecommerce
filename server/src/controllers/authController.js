@@ -49,6 +49,21 @@ export const register = async (req, res) => {
     password: hashedPassword,
   });
 
+  const accessToken = generateAccessToken(user);
+  const refreshToken = generateRefreshToken(user);
+
+  res.cookie(
+    "accessToken",
+    accessToken,
+    accessTokenCookieOptions
+  );
+
+  res.cookie(
+    "refreshToken",
+    refreshToken,
+    refreshTokenCookieOptions
+  );
+
   return res.status(201).json({
     success: true,
     message: "Account created successfully",
@@ -59,6 +74,7 @@ export const register = async (req, res) => {
         email: user.email,
         role: user.role,
       },
+      accessToken,
     },
   });
 };

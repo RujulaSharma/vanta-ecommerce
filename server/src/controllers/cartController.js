@@ -15,6 +15,10 @@ export const getCart = async (req, res) => {
       user: req.user._id,
       items: [],
     });
+  } else if (cart.items?.some((item) => !item.product)) {
+    // Automatically clean up deleted/orphaned products
+    cart.items = cart.items.filter((item) => Boolean(item.product));
+    await cart.save();
   }
 
   return res.status(200).json({

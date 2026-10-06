@@ -13,6 +13,7 @@ import {
   Sparkles,
   Flame,
   Gem,
+  Headphones,
 } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -35,23 +36,23 @@ const money = (value) => `₹${Number(value || 0).toLocaleString("en-IN")}`;
 
 const HERO_SLIDES = [
   {
-    kicker: "AUTUMN / WINTER '26 EDIT",
-    title: "Elevate Your Everyday Aesthetic.",
+    kicker: "SHOP WITH CONFIDENCE",
+    title: "Timeless Luxury, Crafted For You.",
     description:
-      "Handcrafted luxury handbags, structured satchels & contemporary silhouettes designed for timeless refinement.",
-    primaryCta: "Shop Collection",
+      "Handcrafted leather handbags, structured satchels & contemporary silhouettes designed for effortless refinement.",
+    primaryCta: "Shop Collection →",
     primaryLink: "/products?category=bags",
     secondaryCta: "Explore Handbags",
     secondaryLink: "/category/bags",
     image: bagsHeroImage,
-    accent: "Luxury Leathercraft",
+    accent: "100% Genuine Leathercraft",
   },
   {
-    kicker: "SIGNATURE RUNWAY SERIES",
-    title: "Effortless Modern Silhouettes.",
+    kicker: "NEW SEASON RUNWAY '26",
+    title: "Sculpted Modern Silhouettes.",
     description:
       "Discover sculpted evening wear, flowy midi dresses, and tailored separates created with certified natural fibers.",
-    primaryCta: "Discover Dresses",
+    primaryCta: "Shop Dresses →",
     primaryLink: "/products?category=dresses",
     secondaryCta: "View All Tops",
     secondaryLink: "/products?category=tops",
@@ -64,22 +65,22 @@ const BENEFITS = [
   {
     icon: Truck,
     title: "Free Express Shipping",
-    description: "Complimentary delivery on all orders over ₹2,000",
+    description: "Complimentary delivery on orders over ₹2,000",
   },
   {
     icon: RotateCcw,
     title: "7-Day Easy Returns",
-    description: "Hassle-free exchanges and instant store credit",
+    description: "Hassle-free doorstep pickup & instant refunds",
   },
   {
     icon: ShieldCheck,
-    title: "100% Secure Checkout",
+    title: "100% Secure Payments",
     description: "Razorpay & 256-bit encrypted card protection",
   },
   {
-    icon: Sparkles,
-    title: "Artisan Craftsmanship",
-    description: "Verified luxury materials and bespoke finishes",
+    icon: Headphones,
+    title: "24/7 Client Concierge",
+    description: "Dedicated personal styling & order support",
   },
 ];
 
@@ -396,18 +397,18 @@ export default function Home() {
       {/* ========================================================
           1. WIDE CINEMATIC HERO SECTION
           ======================================================== */}
-      <section className="pt-4 sm:pt-6">
+      <section className="pt-3 sm:pt-5">
         <div className="mx-auto max-w-[1520px] px-4 sm:px-6 lg:px-8">
-          <div className="relative overflow-hidden rounded-3xl border border-[var(--vanta-border)] bg-gradient-to-br from-[#f8f6f0] via-[#f1eee4] to-[#e8e4d8] dark:from-[#171817] dark:via-[#131413] dark:to-[#0f100f] shadow-lg">
-            <div className="grid grid-cols-1 lg:grid-cols-12 min-h-[460px] md:min-h-[520px] lg:min-h-[580px] 2xl:min-h-[620px] items-center">
-              {/* TEXT COLUMN */}
-              <div className="lg:col-span-6 xl:col-span-7 p-6 sm:p-10 lg:p-14 2xl:p-18 flex flex-col justify-center z-10">
-                <div className="inline-flex items-center gap-2 rounded-full border border-[var(--vanta-accent)]/40 bg-[var(--vanta-accent)]/10 px-3.5 py-1 text-[10px] font-bold uppercase tracking-[0.24em] text-[var(--vanta-accent)] w-fit mb-4">
+          <div className="relative overflow-hidden rounded-3xl border border-[var(--vanta-border)] bg-gradient-to-br from-[#f8f6f0] via-[#f1eee4] to-[#e8e4d8] dark:from-[#171817] dark:via-[#131413] dark:to-[#0f100f] shadow-md group">
+            <div className="grid grid-cols-1 lg:grid-cols-12 min-h-[460px] md:min-h-[500px] lg:min-h-[540px] xl:min-h-[580px] items-center">
+              {/* TEXT COLUMN (LEFT SAFE ZONE) */}
+              <div className="lg:col-span-6 xl:col-span-7 p-6 sm:p-10 lg:p-14 xl:p-16 flex flex-col justify-center z-10">
+                <div className="inline-flex items-center gap-2 rounded-full border border-[var(--vanta-accent)]/40 bg-[var(--vanta-accent)]/10 px-3.5 py-1 text-[10px] sm:text-xs font-bold uppercase tracking-[0.24em] text-[var(--vanta-accent)] w-fit mb-4">
                   <Sparkles size={12} />
                   <span>{activeSlideData.kicker}</span>
                 </div>
 
-                <h1 className="font-serif text-3xl sm:text-5xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-semibold leading-[1.05] tracking-[-0.03em] text-[var(--vanta-text)]">
+                <h1 className="font-serif text-3xl sm:text-5xl lg:text-5xl xl:text-6xl font-semibold leading-[1.08] tracking-[-0.03em] text-[var(--vanta-text)]">
                   {activeSlideData.title}
                 </h1>
 
@@ -416,10 +417,10 @@ export default function Home() {
                 </p>
 
                 {/* CTA ACTIONS */}
-                <div className="mt-8 flex flex-wrap items-center gap-3.5">
+                <div className="mt-7 sm:mt-8 flex flex-wrap items-center gap-3.5">
                   <Link
                     to={activeSlideData.primaryLink}
-                    className="inline-flex items-center gap-2.5 rounded-xl bg-[var(--vanta-dark)] text-white dark:bg-white dark:text-stone-900 px-7 py-3.5 text-xs font-bold uppercase tracking-[0.14em] shadow-md transition hover:scale-[1.02] hover:opacity-95"
+                    className="inline-flex items-center gap-2.5 rounded-full bg-[var(--vanta-dark)] text-white dark:bg-white dark:text-stone-900 px-7 py-3.5 text-xs font-bold uppercase tracking-[0.14em] shadow-md transition hover:scale-[1.02] hover:opacity-95"
                   >
                     <span>{activeSlideData.primaryCta}</span>
                     <ArrowRight size={15} />
@@ -427,14 +428,14 @@ export default function Home() {
 
                   <Link
                     to={activeSlideData.secondaryLink}
-                    className="inline-flex items-center gap-2 rounded-xl border border-[var(--vanta-border)] bg-[var(--vanta-surface)]/80 backdrop-blur-xs px-6 py-3.5 text-xs font-bold uppercase tracking-[0.12em] text-[var(--vanta-text)] transition hover:bg-[var(--vanta-surface)] hover:border-[var(--vanta-text)]"
+                    className="inline-flex items-center gap-2 rounded-full border border-[var(--vanta-border)] bg-[var(--vanta-surface)]/80 backdrop-blur-xs px-6 py-3.5 text-xs font-bold uppercase tracking-[0.12em] text-[var(--vanta-text)] transition hover:bg-[var(--vanta-surface)] hover:border-[var(--vanta-text)]"
                   >
                     <span>{activeSlideData.secondaryCta}</span>
                   </Link>
                 </div>
 
                 {/* HIGHLIGHT PERKS */}
-                <div className="mt-8 pt-6 border-t border-[var(--vanta-border)]/70 flex flex-wrap items-center gap-6 text-[11px] text-[var(--vanta-muted)]">
+                <div className="mt-7 sm:mt-8 pt-5 border-t border-[var(--vanta-border)]/70 flex flex-wrap items-center gap-6 text-[11px] text-[var(--vanta-muted)]">
                   <span className="flex items-center gap-1.5 font-medium">
                     <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
                     Express Dispatch (24-48h)
@@ -446,8 +447,8 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* IMAGE COLUMN */}
-              <div className="lg:col-span-6 xl:col-span-5 h-full min-h-[320px] sm:min-h-[400px] lg:min-h-full relative overflow-hidden">
+              {/* IMAGE COLUMN (RIGHT FASHION SHOWCASE) */}
+              <div className="lg:col-span-6 xl:col-span-5 h-full min-h-[300px] sm:min-h-[380px] lg:min-h-full relative overflow-hidden flex items-center justify-center">
                 <img
                   src={activeSlideData.image}
                   alt={activeSlideData.title}
@@ -457,41 +458,40 @@ export default function Home() {
               </div>
             </div>
 
-            {/* CAROUSEL CONTROLS */}
-            <div className="absolute bottom-5 right-6 z-20 flex items-center gap-2">
-              <button
-                type="button"
-                onClick={prevSlide}
-                aria-label="Previous slide"
-                className="flex h-9 w-9 items-center justify-center rounded-full border border-[var(--vanta-border)] bg-[var(--vanta-surface)]/90 backdrop-blur-sm text-[var(--vanta-text)] shadow-md transition hover:scale-110"
-              >
-                <ChevronLeft size={16} />
-              </button>
+            {/* FLOATING SIDE NAVIGATION ARROWS (MATCHING PICKSY) */}
+            <button
+              type="button"
+              onClick={prevSlide}
+              aria-label="Previous slide"
+              className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 z-20 flex h-10 w-10 items-center justify-center rounded-full border border-[var(--vanta-border)] bg-[var(--vanta-surface)]/95 backdrop-blur-sm text-[var(--vanta-text)] shadow-lg transition hover:scale-110 active:scale-95"
+            >
+              <ChevronLeft size={18} strokeWidth={2.2} />
+            </button>
 
-              <div className="flex items-center gap-1.5 px-2">
-                {HERO_SLIDES.map((_, idx) => (
-                  <button
-                    key={idx}
-                    type="button"
-                    onClick={() => setCurrentSlide(idx)}
-                    aria-label={`Go to slide ${idx + 1}`}
-                    className={`h-2 rounded-full transition-all duration-300 ${
-                      currentSlide === idx
-                        ? "w-6 bg-[var(--vanta-text)]"
-                        : "w-2 bg-[var(--vanta-muted)]/40 hover:bg-[var(--vanta-muted)]"
-                    }`}
-                  />
-                ))}
-              </div>
+            <button
+              type="button"
+              onClick={nextSlide}
+              aria-label="Next slide"
+              className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 z-20 flex h-10 w-10 items-center justify-center rounded-full border border-[var(--vanta-border)] bg-[var(--vanta-surface)]/95 backdrop-blur-sm text-[var(--vanta-text)] shadow-lg transition hover:scale-110 active:scale-95"
+            >
+              <ChevronRight size={18} strokeWidth={2.2} />
+            </button>
 
-              <button
-                type="button"
-                onClick={nextSlide}
-                aria-label="Next slide"
-                className="flex h-9 w-9 items-center justify-center rounded-full border border-[var(--vanta-border)] bg-[var(--vanta-surface)]/90 backdrop-blur-sm text-[var(--vanta-text)] shadow-md transition hover:scale-110"
-              >
-                <ChevronRight size={16} />
-              </button>
+            {/* CENTERED BOTTOM PAGINATION DOTS (MATCHING PICKSY) */}
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/10 dark:bg-white/10 backdrop-blur-xs">
+              {HERO_SLIDES.map((_, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => setCurrentSlide(idx)}
+                  aria-label={`Go to slide ${idx + 1}`}
+                  className={`h-2 rounded-full transition-all duration-300 ${
+                    currentSlide === idx
+                      ? "w-6 bg-[var(--vanta-text)]"
+                      : "w-2 bg-[var(--vanta-muted)]/60 hover:bg-[var(--vanta-muted)]"
+                  }`}
+                />
+              ))}
             </div>
           </div>
         </div>

@@ -1,14 +1,15 @@
 import { Link } from "react-router-dom";
 import {
   ChevronDown,
+  Gift,
   Heart,
   LayoutDashboard,
   LogOut,
   MapPin,
+  Moon,
   Package,
   ShoppingBag,
   Sun,
-  Moon,
   UserRound,
 } from "lucide-react";
 
@@ -24,72 +25,117 @@ const NavbarProfile = ({
   handleLogout,
   openAuth,
 }) => (
-  <div className="flex items-center gap-2 sm:gap-3 xl:gap-4 shrink-0">
-    {/* Theme Toggle */}
-    <button
-      type="button"
-      className="flex h-10 w-10 items-center justify-center rounded-xl border border-[var(--vanta-border)] bg-[var(--vanta-surface)] text-[var(--vanta-text)] transition hover:bg-[var(--vanta-soft)]"
-      onClick={() => setTheme((current) => (current === "dark" ? "light" : "dark"))}
-      aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
-      title={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
+  <div className="flex items-center gap-1 sm:gap-2 xl:gap-3 shrink-0">
+    {/* 1. BOUTIQUES / STORES */}
+    <Link
+      to="/about"
+      className="group flex flex-col items-center justify-center px-2 py-1 text-[var(--vanta-muted)] hover:text-[var(--vanta-text)] transition"
+      title="Our Boutiques"
+      aria-label="Our Boutiques"
     >
-      {theme === "dark" ? <Sun size={17} strokeWidth={1.8} /> : <Moon size={17} strokeWidth={1.8} />}
-    </button>
+      <MapPin size={18} strokeWidth={1.8} className="group-hover:scale-110 transition-transform" />
+      <span className="text-[10px] font-medium tracking-wide mt-1 group-hover:text-[var(--vanta-text)] transition hidden sm:inline">
+        Boutiques
+      </span>
+    </Link>
 
-    {/* Wishlist Icon with Counter */}
+    {/* 2. OFFERS */}
+    <Link
+      to="/products"
+      className="group flex flex-col items-center justify-center px-2 py-1 text-[var(--vanta-muted)] hover:text-[var(--vanta-text)] transition"
+      title="Curated Offers"
+      aria-label="Curated Offers"
+    >
+      <Gift size={18} strokeWidth={1.8} className="group-hover:scale-110 transition-transform" />
+      <span className="text-[10px] font-medium tracking-wide mt-1 group-hover:text-[var(--vanta-text)] transition hidden sm:inline">
+        Offers
+      </span>
+    </Link>
+
+    {/* 3. WISHLIST */}
     <Link
       to="/wishlist"
       aria-label={`Wishlist${wishlistCount ? `, ${wishlistCount} saved` : ""}`}
       title="Wishlist"
-      className="relative flex items-center gap-2 rounded-xl border border-[var(--vanta-border)] bg-[var(--vanta-surface)] px-3 py-2 text-[var(--vanta-text)] transition hover:bg-[var(--vanta-soft)]"
+      className="group relative flex flex-col items-center justify-center px-2 py-1 text-[var(--vanta-muted)] hover:text-[var(--vanta-text)] transition"
     >
-      <Heart size={18} strokeWidth={1.8} />
-      <span className="hidden xl:inline text-xs font-semibold">Wishlist</span>
-      {wishlistCount > 0 && (
-        <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-[var(--vanta-text)] px-1.5 text-[10px] font-bold leading-none text-[var(--vanta-bg)]">
-          {wishlistCount > 99 ? "99+" : wishlistCount}
-        </span>
-      )}
+      <div className="relative">
+        <Heart size={18} strokeWidth={1.8} className="group-hover:scale-110 transition-transform text-[var(--vanta-text)]" />
+        {wishlistCount > 0 && (
+          <span className="absolute -top-1.5 -right-2.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[var(--vanta-text)] px-1 text-[9px] font-bold text-[var(--vanta-bg)] shadow-xs">
+            {wishlistCount > 99 ? "99+" : wishlistCount}
+          </span>
+        )}
+      </div>
+      <span className="text-[10px] font-medium tracking-wide mt-1 text-[var(--vanta-muted)] group-hover:text-[var(--vanta-text)] transition hidden sm:inline">
+        Wishlist
+      </span>
     </Link>
 
-    {/* Shopping Bag / Cart */}
+    {/* 4. SHOPPING BAG / CART */}
     <Link
       to="/cart"
-      aria-label="Shopping Cart"
+      aria-label={`Cart${cartCount ? `, ${cartCount} items` : ""}`}
       title="Shopping Cart"
-      className="relative flex items-center gap-2 rounded-xl bg-[var(--vanta-dark)] text-white dark:bg-white dark:text-stone-900 px-3.5 py-2 transition hover:opacity-90"
+      className="group relative flex flex-col items-center justify-center px-2 py-1 text-[var(--vanta-muted)] hover:text-[var(--vanta-text)] transition"
     >
-      <ShoppingBag size={18} strokeWidth={1.8} />
-      <span className="hidden sm:inline text-xs font-bold uppercase tracking-[0.06em]">Cart</span>
-      {cartCount > 0 && (
-        <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-[var(--vanta-accent)] px-1.5 text-[10px] font-bold text-black">
-          {cartCount > 99 ? "99+" : cartCount}
-        </span>
-      )}
+      <div className="relative">
+        <ShoppingBag size={18} strokeWidth={1.8} className="group-hover:scale-110 transition-transform text-[var(--vanta-text)]" />
+        {cartCount > 0 && (
+          <span className="absolute -top-1.5 -right-2.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[var(--vanta-accent)] px-1 text-[9px] font-bold text-black shadow-xs">
+            {cartCount > 99 ? "99+" : cartCount}
+          </span>
+        )}
+      </div>
+      <span className="text-[10px] font-medium tracking-wide mt-1 text-[var(--vanta-muted)] group-hover:text-[var(--vanta-text)] transition hidden sm:inline">
+        Cart
+      </span>
     </Link>
 
-    {/* User Profile / Auth */}
+    {/* 5. THEME TOGGLE */}
+    <button
+      type="button"
+      className="group flex flex-col items-center justify-center px-2 py-1 text-[var(--vanta-muted)] hover:text-[var(--vanta-text)] transition"
+      onClick={() => setTheme((current) => (current === "dark" ? "light" : "dark"))}
+      aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
+      title={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
+    >
+      {theme === "dark" ? (
+        <Sun size={18} strokeWidth={1.8} className="group-hover:scale-110 transition-transform" />
+      ) : (
+        <Moon size={18} strokeWidth={1.8} className="group-hover:scale-110 transition-transform" />
+      )}
+      <span className="text-[10px] font-medium tracking-wide mt-1 text-[var(--vanta-muted)] group-hover:text-[var(--vanta-text)] transition hidden sm:inline">
+        {theme === "dark" ? "Light" : "Dark"}
+      </span>
+    </button>
+
+    {/* 6. PROFILE / AUTHENTICATION */}
     {isAuthenticated ? (
-      <div className="relative">
+      <div className="relative pl-1">
         <button
           type="button"
           onClick={() => setProfileOpen((current) => !current)}
           aria-label="Open profile menu"
           aria-expanded={profileOpen}
           aria-haspopup="menu"
-          className="flex h-10 items-center gap-2 rounded-xl border border-[var(--vanta-border)] bg-[var(--vanta-surface)] px-3 text-[var(--vanta-text)] transition hover:bg-[var(--vanta-soft)]"
+          className="group flex flex-col items-center justify-center px-2 py-1 text-[var(--vanta-muted)] hover:text-[var(--vanta-text)] transition"
         >
-          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--vanta-soft)] text-xs font-bold uppercase text-[var(--vanta-text)]">
-            {user?.name?.[0] || "U"}
+          <div className="flex items-center gap-1">
+            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[var(--vanta-soft)] text-[10px] font-bold uppercase text-[var(--vanta-text)] border border-[var(--vanta-border)]">
+              {user?.name?.[0] || "U"}
+            </span>
+            <ChevronDown
+              size={12}
+              strokeWidth={1.8}
+              className={`text-[var(--vanta-muted)] transition-transform duration-200 ${
+                profileOpen ? "rotate-180" : ""
+              }`}
+            />
+          </div>
+          <span className="text-[10px] font-medium tracking-wide mt-1 text-[var(--vanta-muted)] group-hover:text-[var(--vanta-text)] transition hidden sm:inline max-w-[64px] truncate">
+            {user?.name?.split(" ")[0] || "Profile"}
           </span>
-          <span className="hidden md:inline text-xs font-semibold max-w-[90px] truncate text-left">
-            {user?.name?.split(" ")[0] || "Account"}
-          </span>
-          <ChevronDown
-            size={13}
-            strokeWidth={1.8}
-            className={`text-[var(--vanta-muted)] transition-transform duration-200 ${profileOpen ? "rotate-180" : ""}`}
-          />
         </button>
 
         {profileOpen && (
@@ -162,16 +208,17 @@ const NavbarProfile = ({
         )}
       </div>
     ) : (
-      <div className="flex items-center gap-1.5">
-        <button
-          type="button"
-          onClick={() => openAuth("login")}
-          className="flex h-10 items-center gap-1.5 rounded-xl border border-[var(--vanta-border)] bg-[var(--vanta-surface)] px-3.5 text-xs font-semibold text-[var(--vanta-text)] transition hover:bg-[var(--vanta-soft)]"
-        >
-          <UserRound size={16} strokeWidth={1.8} />
-          <span>Sign In</span>
-        </button>
-      </div>
+      <button
+        type="button"
+        onClick={() => openAuth("login")}
+        className="group flex flex-col items-center justify-center px-2 py-1 text-[var(--vanta-muted)] hover:text-[var(--vanta-text)] transition"
+        title="Sign In / Register"
+      >
+        <UserRound size={18} strokeWidth={1.8} className="group-hover:scale-110 transition-transform" />
+        <span className="text-[10px] font-medium tracking-wide mt-1 text-[var(--vanta-muted)] group-hover:text-[var(--vanta-text)] transition hidden sm:inline">
+          Profile
+        </span>
+      </button>
     )}
   </div>
 );

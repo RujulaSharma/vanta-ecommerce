@@ -533,3 +533,33 @@ Payments: Razorpay
 Media: Cloudinary
 Validation: Zod
 Testing: Vitest + Supertest
+
+
+
+                         YOUR PLATFORM
+                              │
+       ┌──────────────────────┼──────────────────────┐
+       │                      │                      │
+     LEARN                  PRACTICE               BUILD
+       │                      │                      │
+  Courses                  DSA / SQL              Projects
+  Tutorials                MCQs                    Templates
+  Q&A                      Coding                 Challenges
+  Notes                    Quizzes                Hackathons
+       │                      │                      │
+       └──────────────────────┼──────────────────────┘
+                              │
+                         CAREER TOOLS
+                              │
+             ┌────────────────┼────────────────┐
+             │                │                │
+          Resume          Interviews       Portfolio
+          Builder         AI/Mock           Builder
+          Templates       Interviews        Templates
+             │                │                │
+             └────────────────┼────────────────┘
+                              │
+                         OPPORTUNITIES
+                              │
+                    Hackathons / Jobs /
+                    Internships / Challenges

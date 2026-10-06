@@ -7,7 +7,6 @@ import { useAuthModal } from "../context/AuthModalContext";
 import categoryService from "../services/categoryService";
 import NavbarDesktop from "../components/navbar/NavbarDesktop";
 import NavbarMobile from "../components/navbar/NavbarMobile";
-import NavbarProfile from "../components/navbar/NavbarProfile";
 
 const getInitialTheme = () => {
   if (typeof window === "undefined") return "light";
@@ -179,35 +178,28 @@ const Navbar = () => {
           handleLogout={handleLogout}
         />
 
-        {/* Desktop Navbar Row & Subnav */}
-        <div className="hidden lg:flex items-center justify-between w-full">
-          <NavbarDesktop
-            categories={categories}
-            collectionsOpen={collectionsOpen}
-            setCollectionsOpen={setCollectionsOpen}
-            navSearch={navSearch}
-            setNavSearch={setNavSearch}
-            navigate={navigate}
-            closeMobileMenu={closeMobileMenu}
-            selectedCategory={selectedCategory}
-            setSelectedCategory={setSelectedCategory}
-          />
-
-          <div className="self-start pt-4">
-            <NavbarProfile
-              user={user}
-              isAuthenticated={isAuthenticated}
-              profileOpen={profileOpen}
-              setProfileOpen={setProfileOpen}
-              theme={theme}
-              setTheme={setTheme}
-              wishlistCount={wishlistCount}
-              cartCount={cartCount}
-              handleLogout={handleLogout}
-              openAuth={openAuth}
-            />
-          </div>
-        </div>
+        {/* Desktop Navbar (2-Tier Header) */}
+        <NavbarDesktop
+          categories={categories}
+          collectionsOpen={collectionsOpen}
+          setCollectionsOpen={setCollectionsOpen}
+          navSearch={navSearch}
+          setNavSearch={setNavSearch}
+          navigate={navigate}
+          closeMobileMenu={closeMobileMenu}
+          selectedCategory={selectedCategory}
+          setSelectedCategory={setSelectedCategory}
+          user={user}
+          isAuthenticated={isAuthenticated}
+          profileOpen={profileOpen}
+          setProfileOpen={setProfileOpen}
+          theme={theme}
+          setTheme={setTheme}
+          wishlistCount={wishlistCount}
+          cartCount={cartCount}
+          handleLogout={handleLogout}
+          openAuth={openAuth}
+        />
       </div>
     </header>
   );

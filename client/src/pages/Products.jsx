@@ -489,8 +489,9 @@ const Products = ({ categorySlug = "" }) => {
                     toggleWishlist={toggleWishlist}
                   />
 
-                  {pagination.totalPages > 1 && (
+                  {pagination && pagination.totalPages > 1 && (
                     <Pagination
+                      pagination={pagination}
                       page={page}
                       totalPages={pagination.totalPages}
                       setPage={setPage}

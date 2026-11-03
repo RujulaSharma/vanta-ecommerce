@@ -27,14 +27,14 @@ const ProductForm = ({
   }, [imageFilePreviews]);
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/50 px-4 py-8">
-      <div className="mx-auto max-w-2xl bg-white shadow-xl">
-        <div className="flex items-center justify-between border-b border-stone-200 px-6 py-5">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-xs px-4 py-8 flex items-center justify-center">
+      <div className="w-full max-w-2xl rounded-2xl border border-[var(--vanta-border)] bg-[var(--vanta-surface)] text-[var(--vanta-text)] shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+        <div className="flex items-center justify-between border-b border-[var(--vanta-border)] bg-[var(--vanta-soft)]/50 px-6 py-4">
           <div>
-            <p className="text-[10px] font-bold tracking-[0.2em] text-stone-400">
+            <p className="text-[10px] font-bold tracking-[0.2em] text-[var(--vanta-muted)] uppercase">
               PRODUCT MANAGEMENT
             </p>
-            <h2 className="mt-1 font-serif text-2xl">
+            <h2 className="mt-0.5 font-serif text-xl font-semibold">
               {editingProduct ? "Edit Product" : "Add Product"}
             </h2>
           </div>
@@ -43,21 +43,21 @@ const ProductForm = ({
             type="button"
             onClick={onClose}
             disabled={saving}
-            className="p-2 text-stone-500 hover:bg-stone-100"
+            className="rounded-lg p-1.5 text-[var(--vanta-muted)] transition hover:bg-[var(--vanta-soft)] hover:text-[var(--vanta-text)]"
           >
-            <X size={20} />
+            <X size={18} />
           </button>
         </div>
 
-        <form onSubmit={onSubmit} className="space-y-5 p-6">
-          <div className="grid gap-5 sm:grid-cols-2">
+        <form onSubmit={onSubmit} className="space-y-4 p-6">
+          <div className="grid gap-4 sm:grid-cols-2">
             <div className="sm:col-span-2">
               <label className="text-xs font-semibold">Product Name</label>
               <input
                 name="name"
                 value={form.name}
                 onChange={onChange}
-                className="mt-2 h-11 w-full border border-stone-300 px-3 text-sm outline-none focus:border-stone-950"
+                className="mt-1.5 h-10 w-full rounded-xl border border-[var(--vanta-border)] bg-[var(--vanta-bg)] px-3 text-xs text-[var(--vanta-text)] outline-none focus:border-[var(--vanta-gold)]"
                 placeholder="Example: Vanta Leather Tote"
               />
             </div>
@@ -68,34 +68,34 @@ const ProductForm = ({
                 name="description"
                 value={form.description}
                 onChange={onChange}
-                rows={4}
-                className="mt-2 w-full resize-none border border-stone-300 p-3 text-sm outline-none focus:border-stone-950"
+                rows={3}
+                className="mt-1.5 w-full resize-none rounded-xl border border-[var(--vanta-border)] bg-[var(--vanta-bg)] p-3 text-xs text-[var(--vanta-text)] outline-none focus:border-[var(--vanta-gold)]"
                 placeholder="Describe the product..."
               />
             </div>
 
             <div>
-              <label className="text-xs font-semibold">Price</label>
+              <label className="text-xs font-semibold">Price (₹)</label>
               <input
                 name="price"
                 type="number"
                 min="0"
                 value={form.price}
                 onChange={onChange}
-                className="mt-2 h-11 w-full border border-stone-300 px-3 text-sm outline-none focus:border-stone-950"
+                className="mt-1.5 h-10 w-full rounded-xl border border-[var(--vanta-border)] bg-[var(--vanta-bg)] px-3 text-xs text-[var(--vanta-text)] outline-none focus:border-[var(--vanta-gold)]"
                 placeholder="2999"
               />
             </div>
 
             <div>
-              <label className="text-xs font-semibold">Compare At Price</label>
+              <label className="text-xs font-semibold">Compare At Price (₹)</label>
               <input
                 name="compareAtPrice"
                 type="number"
                 min="0"
                 value={form.compareAtPrice}
                 onChange={onChange}
-                className="mt-2 h-11 w-full border border-stone-300 px-3 text-sm outline-none focus:border-stone-950"
+                className="mt-1.5 h-10 w-full rounded-xl border border-[var(--vanta-border)] bg-[var(--vanta-bg)] px-3 text-xs text-[var(--vanta-text)] outline-none focus:border-[var(--vanta-gold)]"
                 placeholder="3999"
               />
             </div>
@@ -106,7 +106,7 @@ const ProductForm = ({
                 name="category"
                 value={form.category}
                 onChange={onChange}
-                className="mt-2 h-11 w-full border border-stone-300 bg-white px-3 text-sm outline-none focus:border-stone-950"
+                className="mt-1.5 h-10 w-full rounded-xl border border-[var(--vanta-border)] bg-[var(--vanta-bg)] px-3 text-xs text-[var(--vanta-text)] outline-none focus:border-[var(--vanta-gold)]"
               >
                 <option value="">Select category</option>
                 {categories.map((category) => (
@@ -124,7 +124,7 @@ const ProductForm = ({
                 value={form.sku}
                 onChange={onChange}
                 disabled={Boolean(editingProduct)}
-                className="mt-2 h-11 w-full border border-stone-300 px-3 text-sm uppercase outline-none focus:border-stone-950 disabled:bg-stone-100"
+                className="mt-1.5 h-10 w-full rounded-xl border border-[var(--vanta-border)] bg-[var(--vanta-bg)] px-3 text-xs uppercase text-[var(--vanta-text)] outline-none focus:border-[var(--vanta-gold)] disabled:opacity-50"
                 placeholder="VB-TOTE-001"
               />
             </div>
@@ -137,7 +137,7 @@ const ProductForm = ({
                 min="0"
                 value={form.stock}
                 onChange={onChange}
-                className="mt-2 h-11 w-full border border-stone-300 px-3 text-sm outline-none focus:border-stone-950"
+                className="mt-1.5 h-10 w-full rounded-xl border border-[var(--vanta-border)] bg-[var(--vanta-bg)] px-3 text-xs text-[var(--vanta-text)] outline-none focus:border-[var(--vanta-gold)]"
               />
             </div>
 
@@ -147,7 +147,7 @@ const ProductForm = ({
                 name="brand"
                 value={form.brand}
                 onChange={onChange}
-                className="mt-2 h-11 w-full border border-stone-300 px-3 text-sm outline-none focus:border-stone-950"
+                className="mt-1.5 h-10 w-full rounded-xl border border-[var(--vanta-border)] bg-[var(--vanta-bg)] px-3 text-xs text-[var(--vanta-text)] outline-none focus:border-[var(--vanta-gold)]"
               />
             </div>
 
@@ -157,7 +157,7 @@ const ProductForm = ({
                 name="material"
                 value={form.material}
                 onChange={onChange}
-                className="mt-2 h-11 w-full border border-stone-300 px-3 text-sm outline-none focus:border-stone-950"
+                className="mt-1.5 h-10 w-full rounded-xl border border-[var(--vanta-border)] bg-[var(--vanta-bg)] px-3 text-xs text-[var(--vanta-text)] outline-none focus:border-[var(--vanta-gold)]"
                 placeholder="Leather"
               />
             </div>
@@ -168,7 +168,7 @@ const ProductForm = ({
                 name="color"
                 value={form.color}
                 onChange={onChange}
-                className="mt-2 h-11 w-full border border-stone-300 px-3 text-sm outline-none focus:border-stone-950"
+                className="mt-1.5 h-10 w-full rounded-xl border border-[var(--vanta-border)] bg-[var(--vanta-bg)] px-3 text-xs text-[var(--vanta-text)] outline-none focus:border-[var(--vanta-gold)]"
                 placeholder="Black"
               />
             </div>
@@ -177,11 +177,11 @@ const ProductForm = ({
               <label className="text-xs font-semibold">Product Images</label>
               <label
                 htmlFor="product-images"
-                className="mt-2 flex min-h-32 cursor-pointer flex-col items-center justify-center border border-dashed border-stone-300 bg-stone-50 px-5 py-7 text-center hover:border-stone-950 hover:bg-white"
+                className="mt-1.5 flex min-h-28 cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed border-[var(--vanta-border)] bg-[var(--vanta-soft)]/50 px-5 py-6 text-center transition hover:border-[var(--vanta-gold)] hover:bg-[var(--vanta-soft)]"
               >
                 <span className="text-2xl">📷</span>
-                <span className="mt-2 text-sm font-semibold">Choose Images</span>
-                <span className="mt-1 text-[11px] text-stone-400">
+                <span className="mt-1.5 text-xs font-semibold text-[var(--vanta-text)]">Choose Images</span>
+                <span className="mt-0.5 text-[11px] text-[var(--vanta-muted)]">
                   JPG, JPEG, PNG or WEBP · up to 5 MB each · max 10
                 </span>
                 <input
@@ -202,11 +202,11 @@ const ProductForm = ({
               </label>
 
               {(form.existingImages.length > 0 || form.imageFiles.length > 0) && (
-                <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+                <div className="mt-3 grid grid-cols-2 gap-2.5 sm:grid-cols-4">
                   {form.existingImages.map((image, index) => (
                     <div
                       key={`${image}-${index}`}
-                      className="group relative aspect-square overflow-hidden bg-stone-100"
+                      className="group relative aspect-square overflow-hidden rounded-xl border border-[var(--vanta-border)] bg-[var(--vanta-soft)]"
                     >
                       <img
                         src={image}
@@ -223,10 +223,10 @@ const ProductForm = ({
                             ),
                           }))
                         }
-                        className="absolute right-2 top-2 rounded-full bg-white/90 p-1 text-stone-950 shadow hover:bg-white"
+                        className="absolute right-1.5 top-1.5 rounded-full bg-black/60 p-1 text-white shadow-xs hover:bg-black"
                         aria-label="Remove image"
                       >
-                        <X size={14} />
+                        <X size={12} />
                       </button>
                     </div>
                   ))}
@@ -234,7 +234,7 @@ const ProductForm = ({
                   {form.imageFiles.map((file, index) => (
                     <div
                       key={`${file.name}-${file.lastModified}-${index}`}
-                      className="group relative aspect-square overflow-hidden bg-stone-100"
+                      className="group relative aspect-square overflow-hidden rounded-xl border border-[var(--vanta-border)] bg-[var(--vanta-soft)]"
                     >
                       <img
                         src={imageFilePreviews[index]?.url}
@@ -251,48 +251,48 @@ const ProductForm = ({
                             ),
                           }))
                         }
-                        className="absolute right-2 top-2 rounded-full bg-white/90 p-1 text-stone-950 shadow hover:bg-white"
+                        className="absolute right-1.5 top-1.5 rounded-full bg-black/60 p-1 text-white shadow-xs hover:bg-black"
                         aria-label="Remove selected image"
                       >
-                        <X size={14} />
+                        <X size={12} />
                       </button>
                     </div>
                   ))}
                 </div>
               )}
 
-              <p className="mt-2 text-[11px] text-stone-400">
+              <p className="mt-2 text-[11px] text-[var(--vanta-muted)]">
                 {editingProduct
                   ? "Keep existing images, remove them, or add new images."
                   : "Choose one or more images. The backend uploads them to Cloudinary automatically."}
               </p>
             </div>
 
-            <label className="flex cursor-pointer items-center gap-3 sm:col-span-2">
+            <label className="flex cursor-pointer items-center gap-2.5 sm:col-span-2">
               <input
                 type="checkbox"
                 name="isFeatured"
                 checked={form.isFeatured}
                 onChange={onChange}
-                className="h-4 w-4"
+                className="h-4 w-4 rounded border-[var(--vanta-border)] accent-[var(--vanta-gold)]"
               />
-              <span className="text-sm">Mark as featured product</span>
+              <span className="text-xs font-medium text-[var(--vanta-text)]">Mark as featured product</span>
             </label>
           </div>
 
-          <div className="flex justify-end gap-3 border-t border-stone-200 pt-5">
+          <div className="flex justify-end gap-3 border-t border-[var(--vanta-border)] pt-4">
             <button
               type="button"
               onClick={onClose}
               disabled={saving}
-              className="border border-stone-300 px-5 py-3 text-sm font-semibold hover:bg-stone-50"
+              className="rounded-xl border border-[var(--vanta-border)] bg-[var(--vanta-surface)] px-4 py-2.5 text-xs font-semibold text-[var(--vanta-text)] transition hover:bg-[var(--vanta-soft)]"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={saving}
-              className="bg-stone-950 px-6 py-3 text-sm font-semibold text-white hover:bg-stone-800 disabled:bg-stone-400"
+              className="rounded-xl bg-[var(--vanta-text)] px-6 py-2.5 text-xs font-bold uppercase tracking-[0.1em] text-[var(--vanta-bg)] shadow-xs transition hover:opacity-90 disabled:opacity-50"
             >
               {saving
                 ? "Saving..."

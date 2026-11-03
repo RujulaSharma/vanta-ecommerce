@@ -93,11 +93,11 @@ const AdminOrderDetails = () => {
 
   if (loading) {
     return (
-      <main className="min-h-[70vh] bg-stone-50 px-5 py-12">
-        <div className="mx-auto max-w-6xl space-y-5">
-          <div className="h-6 w-32 animate-pulse bg-stone-200" />
-          <div className="h-20 animate-pulse bg-stone-200" />
-          <div className="h-64 animate-pulse bg-stone-200" />
+      <main className="min-h-[70vh] bg-[var(--vanta-bg)] text-[var(--vanta-text)] px-5 py-10 transition-colors">
+        <div className="mx-auto max-w-6xl space-y-4">
+          <div className="h-6 w-32 animate-pulse rounded-xl bg-[var(--vanta-soft)]" />
+          <div className="h-20 animate-pulse rounded-2xl bg-[var(--vanta-soft)]" />
+          <div className="h-64 animate-pulse rounded-2xl bg-[var(--vanta-soft)]" />
         </div>
       </main>
     );
@@ -105,15 +105,15 @@ const AdminOrderDetails = () => {
 
   if (!order) {
     return (
-      <main className="min-h-[70vh] bg-stone-50 px-5 py-16">
-        <div className="mx-auto max-w-6xl text-center">
-          <h1 className="font-serif text-4xl">
+      <main className="min-h-[70vh] bg-[var(--vanta-bg)] text-[var(--vanta-text)] px-5 py-16 flex items-center justify-center">
+        <div className="mx-auto max-w-md rounded-2xl border border-[var(--vanta-border)] bg-[var(--vanta-surface)] p-8 text-center shadow-xs">
+          <h1 className="font-serif text-3xl font-semibold">
             Order not found
           </h1>
 
           <Link
             to="/admin/orders"
-            className="mt-8 inline-flex items-center gap-2 bg-stone-950 px-6 py-3 text-sm font-semibold text-white"
+            className="mt-6 inline-flex items-center gap-2 rounded-xl bg-[var(--vanta-text)] px-6 py-3 text-xs font-bold uppercase tracking-[0.14em] text-[var(--vanta-bg)] shadow-md transition hover:opacity-90"
           >
             <ArrowLeft size={16} />
             Back to Orders
@@ -130,14 +130,14 @@ const AdminOrderDetails = () => {
     const availableStatuses =
   ORDER_STATUS_TRANSITIONS[order.orderStatus] || [];
   return (
-    <main className="min-h-[70vh] bg-stone-50 px-5 py-12">
+    <main className="min-h-[70vh] bg-[var(--vanta-bg)] text-[var(--vanta-text)] px-5 py-10 transition-colors duration-200">
       <div className="mx-auto max-w-6xl">
 
         {/* Back */}
 
         <Link
           to="/admin/orders"
-          className="inline-flex items-center gap-2 text-sm font-semibold text-stone-600 hover:text-stone-950"
+          className="inline-flex items-center gap-2 text-xs font-semibold text-[var(--vanta-muted)] hover:text-[var(--vanta-text)] transition"
         >
           <ArrowLeft size={16} />
           Back to Orders
@@ -145,24 +145,24 @@ const AdminOrderDetails = () => {
 
         {/* Header */}
 
-        <div className="mt-8 flex flex-col justify-between gap-5 md:flex-row md:items-end">
+        <div className="mt-6 flex flex-col justify-between gap-5 md:flex-row md:items-end">
           <div>
-            <p className="text-xs font-bold tracking-[0.25em] text-stone-500">
+            <p className="text-[10px] font-bold tracking-[0.25em] text-[var(--vanta-muted)] uppercase">
               VANTA ADMIN
             </p>
 
-            <h1 className="mt-3 font-serif text-4xl md:text-5xl">
+            <h1 className="mt-2 font-serif text-3xl md:text-4xl font-semibold">
               Order #{order._id.slice(-8)}
             </h1>
 
-            <p className="mt-3 text-sm text-stone-500">
+            <p className="mt-2 text-xs text-[var(--vanta-muted)]">
               Placed on {formatDate(order.createdAt, "long")}
             </p>
           </div>
 
           <div className="flex flex-wrap gap-2">
             <span
-              className={`border px-3 py-2 text-[10px] font-bold uppercase ${
+              className={`rounded-lg border px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider ${
                 ORDER_STATUS_STYLES[order.orderStatus] || ""
               }`}
             >
@@ -170,7 +170,7 @@ const AdminOrderDetails = () => {
             </span>
 
             <span
-              className={`border px-3 py-2 text-[10px] font-bold uppercase ${
+              className={`rounded-lg border px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider ${
                 PAYMENT_STATUS_STYLES[
                   order.paymentStatus
                 ] || ""
@@ -183,50 +183,50 @@ const AdminOrderDetails = () => {
 
         {/* Status update */}
 
-        <section className="mt-8 border border-stone-200 bg-white p-6">
+        <section className="mt-8 rounded-2xl border border-[var(--vanta-border)] bg-[var(--vanta-surface)] p-6 shadow-xs">
           <div className="flex items-center gap-3">
             <Package
               size={20}
-              className="text-stone-500"
+              className="text-[var(--vanta-gold)]"
             />
 
             <div>
-              <p className="text-xs font-bold tracking-[0.2em] text-stone-500">
+              <p className="text-[10px] font-bold tracking-[0.2em] text-[var(--vanta-muted)] uppercase">
                 FULFILLMENT
               </p>
 
-              <h2 className="mt-1 font-serif text-2xl">
+              <h2 className="mt-0.5 font-serif text-xl font-semibold">
                 Update Order Status
               </h2>
             </div>
           </div>
 
-          <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-          <select
-  value={selectedStatus}
-  onChange={(event) =>
-    setSelectedStatus(event.target.value)
-  }
-  disabled={!canChangeStatus || updating}
-  className="h-12 flex-1 border border-stone-300 bg-white px-4 text-sm outline-none focus:border-stone-950 disabled:bg-stone-100"
->
-  <option value={order.orderStatus}>
-    Current:{" "}
-    {order.orderStatus.charAt(0).toUpperCase() +
-      order.orderStatus.slice(1)}
-  </option>
+          <div className="mt-5 flex flex-col gap-3 sm:flex-row">
+            <select
+              value={selectedStatus}
+              onChange={(event) =>
+                setSelectedStatus(event.target.value)
+              }
+              disabled={!canChangeStatus || updating}
+              className="h-11 flex-1 rounded-xl border border-[var(--vanta-border)] bg-[var(--vanta-bg)] px-4 text-xs font-medium text-[var(--vanta-text)] outline-none focus:border-[var(--vanta-gold)] disabled:opacity-50"
+            >
+              <option value={order.orderStatus}>
+                Current:{" "}
+                {order.orderStatus.charAt(0).toUpperCase() +
+                  order.orderStatus.slice(1)}
+              </option>
 
-  {availableStatuses.map((status) => (
-    <option
-      key={status}
-      value={status}
-    >
-      Change to:{" "}
-      {status.charAt(0).toUpperCase() +
-        status.slice(1)}
-    </option>
-  ))}
-</select>
+              {availableStatuses.map((status) => (
+                <option
+                  key={status}
+                  value={status}
+                >
+                  Change to:{" "}
+                  {status.charAt(0).toUpperCase() +
+                    status.slice(1)}
+                </option>
+              ))}
+            </select>
             <button
               type="button"
               onClick={updateStatus}
@@ -236,7 +236,7 @@ const AdminOrderDetails = () => {
                 selectedStatus ===
                   order.orderStatus
               }
-              className="inline-flex h-12 items-center justify-center gap-2 bg-stone-950 px-6 text-sm font-semibold text-white hover:bg-stone-800 disabled:cursor-not-allowed disabled:bg-stone-300"
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-[var(--vanta-text)] px-6 text-xs font-bold uppercase tracking-[0.1em] text-[var(--vanta-bg)] shadow-xs transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
             >
               <Check size={16} />
 
@@ -247,7 +247,7 @@ const AdminOrderDetails = () => {
           </div>
 
           {!canChangeStatus && (
-            <p className="mt-3 text-xs text-stone-500">
+            <p className="mt-3 text-xs text-[var(--vanta-muted)]">
               This order is {order.orderStatus} and
               cannot be moved to another status.
             </p>
@@ -260,21 +260,21 @@ const AdminOrderDetails = () => {
 
           {/* Items */}
 
-          <section className="border border-stone-200 bg-white">
-            <div className="border-b border-stone-200 px-6 py-5">
-              <h2 className="font-serif text-2xl">
+          <section className="overflow-hidden rounded-2xl border border-[var(--vanta-border)] bg-[var(--vanta-surface)] shadow-xs">
+            <div className="border-b border-[var(--vanta-border)] bg-[var(--vanta-soft)]/50 px-6 py-4">
+              <h2 className="font-serif text-lg font-semibold">
                 Order Items
               </h2>
             </div>
 
-            <div className="divide-y divide-stone-100">
+            <div className="divide-y divide-[var(--vanta-border)]">
               {order.items?.map(
                 (item, index) => (
                   <div
                     key={`${item.product?._id || item.product}-${index}`}
                     className="flex gap-4 px-6 py-5"
                   >
-                    <div className="h-20 w-20 shrink-0 overflow-hidden bg-stone-100">
+                    <div className="h-20 w-20 shrink-0 overflow-hidden rounded-xl border border-[var(--vanta-border)] bg-[var(--vanta-soft)]">
                       {item.image ? (
                         <img
                           src={item.image}
@@ -282,29 +282,29 @@ const AdminOrderDetails = () => {
                           className="h-full w-full object-cover"
                         />
                       ) : (
-                        <div className="flex h-full items-center justify-center text-[9px] font-bold tracking-[0.15em] text-stone-400">
+                        <div className="flex h-full items-center justify-center text-[9px] font-bold tracking-[0.15em] text-[var(--vanta-muted)]">
                           VANTA
                         </div>
                       )}
                     </div>
 
                     <div className="min-w-0 flex-1">
-                      <p className="text-sm font-semibold">
+                      <p className="text-sm font-semibold text-[var(--vanta-text)]">
                         {item.name}
                       </p>
 
-                      <p className="mt-1 text-xs text-stone-500">
+                      <p className="mt-1 text-xs text-[var(--vanta-muted)]">
                         Quantity: {item.quantity}
                       </p>
 
-                      <p className="mt-2 text-sm">
+                      <p className="mt-2 text-xs font-medium text-[var(--vanta-muted)]">
                         {formatCurrency(item.price)}
                         {" × "}
                         {item.quantity}
                       </p>
                     </div>
 
-                    <p className="text-sm font-semibold">
+                    <p className="text-sm font-semibold text-[var(--vanta-text)]">
                       {formatCurrency(
                         item.price *
                           item.quantity
@@ -317,14 +317,14 @@ const AdminOrderDetails = () => {
 
             {/* Totals */}
 
-            <div className="border-t border-stone-200 px-6 py-6">
-              <div className="space-y-3 text-sm">
+            <div className="border-t border-[var(--vanta-border)] bg-[var(--vanta-soft)]/30 px-6 py-5">
+              <div className="space-y-2.5 text-xs">
                 <div className="flex justify-between">
-                  <span className="text-stone-500">
+                  <span className="text-[var(--vanta-muted)]">
                     Subtotal
                   </span>
 
-                  <span>
+                  <span className="font-medium text-[var(--vanta-text)]">
                     {formatCurrency(
                       order.subtotal
                     )}
@@ -332,11 +332,11 @@ const AdminOrderDetails = () => {
                 </div>
 
                 <div className="flex justify-between">
-                  <span className="text-stone-500">
+                  <span className="text-[var(--vanta-muted)]">
                     Shipping
                   </span>
 
-                  <span>
+                  <span className="font-medium text-[var(--vanta-text)]">
                     {order.shippingFee === 0
                       ? "FREE"
                       : formatCurrency(
@@ -345,10 +345,10 @@ const AdminOrderDetails = () => {
                   </span>
                 </div>
 
-                <div className="flex justify-between border-t border-stone-200 pt-4 text-base font-semibold">
-                  <span>Total</span>
+                <div className="flex justify-between border-t border-[var(--vanta-border)] pt-3 text-sm font-semibold">
+                  <span className="text-[var(--vanta-text)]">Total</span>
 
-                  <span>
+                  <span className="text-[var(--vanta-text)]">
                     {formatCurrency(order.total)}
                   </span>
                 </div>
@@ -358,40 +358,40 @@ const AdminOrderDetails = () => {
 
           {/* Customer / Shipping */}
 
-          <div className="space-y-8">
+          <div className="space-y-6">
 
             {/* Customer */}
 
-            <section className="border border-stone-200 bg-white p-6">
+            <section className="rounded-2xl border border-[var(--vanta-border)] bg-[var(--vanta-surface)] p-6 shadow-xs">
               <div className="flex items-center gap-3">
                 <User
                   size={19}
-                  className="text-stone-500"
+                  className="text-[var(--vanta-gold)]"
                 />
 
-                <h2 className="font-serif text-2xl">
+                <h2 className="font-serif text-lg font-semibold">
                   Customer
                 </h2>
               </div>
 
-              <div className="mt-6 space-y-3 text-sm">
+              <div className="mt-5 space-y-3 text-xs">
                 <div>
-                  <p className="text-xs text-stone-400">
+                  <p className="text-[10px] font-bold tracking-wider text-[var(--vanta-muted)] uppercase">
                     NAME
                   </p>
 
-                  <p className="mt-1 font-medium">
+                  <p className="mt-1 font-semibold text-[var(--vanta-text)]">
                     {order.user?.name ||
                       order.shippingAddress?.name}
                   </p>
                 </div>
 
                 <div>
-                  <p className="text-xs text-stone-400">
+                  <p className="text-[10px] font-bold tracking-wider text-[var(--vanta-muted)] uppercase">
                     EMAIL
                   </p>
 
-                  <p className="mt-1 break-all">
+                  <p className="mt-1 break-all text-[var(--vanta-text)]">
                     {order.user?.email ||
                       "Not available"}
                   </p>
@@ -401,13 +401,13 @@ const AdminOrderDetails = () => {
 
             {/* Shipping */}
 
-            <section className="border border-stone-200 bg-white p-6">
-              <h2 className="font-serif text-2xl">
+            <section className="rounded-2xl border border-[var(--vanta-border)] bg-[var(--vanta-surface)] p-6 shadow-xs">
+              <h2 className="font-serif text-lg font-semibold">
                 Shipping Address
               </h2>
 
-              <div className="mt-6 space-y-1 text-sm leading-6 text-stone-600">
-                <p className="font-semibold text-stone-950">
+              <div className="mt-4 space-y-1 text-xs leading-5 text-[var(--vanta-muted)]">
+                <p className="font-semibold text-[var(--vanta-text)]">
                   {order.shippingAddress?.name}
                 </p>
 
@@ -415,13 +415,13 @@ const AdminOrderDetails = () => {
                   {order.shippingAddress?.phone}
                 </p>
 
-                <p className="pt-2">
+                <p className="pt-1 text-[var(--vanta-text)]">
                   {order.shippingAddress?.addressLine1}
                 </p>
 
                 {order.shippingAddress
                   ?.addressLine2 && (
-                  <p>
+                  <p className="text-[var(--vanta-text)]">
                     {
                       order.shippingAddress
                         .addressLine2

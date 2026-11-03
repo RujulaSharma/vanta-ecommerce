@@ -104,21 +104,15 @@ const AdminDashboard = () => {
 
   if (!isAuthenticated) {
     return (
-      <main className="min-h-[70vh] bg-stone-50 px-5 py-16">
-        <div className="mx-auto max-w-5xl text-center">
-          <h1 className="font-serif text-4xl">
-            Admin Dashboard
-          </h1>
-
-          <p className="mt-4 text-stone-500">
-            Please login to access the admin area.
-          </p>
-
+      <main className="min-h-[70vh] bg-[var(--vanta-bg)] text-[var(--vanta-text)] px-5 py-16 flex items-center justify-center">
+        <div className="mx-auto max-w-md text-center rounded-2xl border border-[var(--vanta-border)] bg-[var(--vanta-surface)] p-8 shadow-xs">
+          <h1 className="font-serif text-3xl font-semibold">Admin Dashboard</h1>
+          <p className="mt-2 text-xs text-[var(--vanta-muted)]">Please sign in to access the administrator controls.</p>
           <Link
             to="/login"
-            className="mt-8 inline-flex bg-stone-950 px-6 py-3 text-sm font-semibold text-white"
+            className="mt-6 inline-flex rounded-xl bg-[var(--vanta-text)] px-7 py-3 text-xs font-bold uppercase tracking-[0.14em] text-[var(--vanta-bg)] shadow-md transition hover:opacity-90"
           >
-            Login
+            Sign In
           </Link>
         </div>
       </main>
@@ -126,213 +120,157 @@ const AdminDashboard = () => {
   }
 
   return (
-    <main className="min-h-[70vh] bg-stone-50 px-5 py-12">
+    <main className="min-h-[70vh] bg-[var(--vanta-bg)] text-[var(--vanta-text)] px-5 py-10 transition-colors duration-200">
       <div className="mx-auto max-w-7xl">
-
         <AdminHeader
           title="Dashboard"
-          description={`Welcome back, ${user?.name || "Admin"}.`}
+          description={`Welcome back, ${user?.name || "Administrator"}.`}
         >
           <Link
             to="/admin/orders"
-            className="inline-flex items-center gap-2 border border-stone-300 bg-white px-5 py-3 text-sm font-semibold hover:bg-stone-100"
+            className="inline-flex items-center gap-2 rounded-xl border border-[var(--vanta-border)] bg-[var(--vanta-surface)] px-4 py-2.5 text-xs font-semibold text-[var(--vanta-text)] transition hover:bg-[var(--vanta-soft)]"
           >
-            Orders
-            <ArrowRight size={16} />
+            <span>Orders</span>
+            <ArrowRight size={14} />
           </Link>
           <Link
             to="/admin/products"
-            className="inline-flex items-center gap-2 bg-stone-950 px-5 py-3 text-sm font-semibold text-white hover:bg-stone-800"
+            className="inline-flex items-center gap-2 rounded-xl bg-[var(--vanta-text)] px-4 py-2.5 text-xs font-bold uppercase tracking-[0.1em] text-[var(--vanta-bg)] shadow-xs transition hover:opacity-90"
           >
-            Products
-            <ArrowRight size={16} />
+            <span>Manage Products</span>
+            <ArrowRight size={14} />
           </Link>
         </AdminHeader>
 
         {/* Loading */}
-
         {loading ? (
-          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {[1, 2, 3, 4].map((item) => (
               <div
                 key={item}
-                className="h-32 animate-pulse bg-stone-200"
+                className="h-32 animate-pulse rounded-2xl bg-[var(--vanta-soft)]"
               />
             ))}
           </div>
         ) : (
           <>
-            {/* Stats */}
-
-            <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-
-              <div className="border border-stone-200 bg-white p-6">
+            {/* Primary KPI Stats */}
+            <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              <div className="rounded-2xl border border-[var(--vanta-border)] bg-[var(--vanta-surface)] p-6 shadow-xs">
                 <div className="flex items-center justify-between">
-                  <p className="text-xs font-bold tracking-[0.15em] text-stone-500">
-                    REVENUE
+                  <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-[var(--vanta-muted)]">
+                    TOTAL REVENUE
                   </p>
-
-                  <IndianRupee
-                    size={20}
-                    className="text-stone-400"
-                  />
+                  <IndianRupee size={18} className="text-[var(--vanta-accent)]" />
                 </div>
-
-                <p className="mt-5 text-3xl font-semibold">
+                <p className="mt-4 text-3xl font-serif font-bold text-[var(--vanta-text)]">
                   {formatCurrency(stats.revenue)}
                 </p>
-
-                <p className="mt-2 text-xs text-stone-500">
-                  From paid orders
-                </p>
+                <p className="mt-1 text-[11px] text-[var(--vanta-muted)]">Verified paid transactions</p>
               </div>
 
-              <div className="border border-stone-200 bg-white p-6">
+              <div className="rounded-2xl border border-[var(--vanta-border)] bg-[var(--vanta-surface)] p-6 shadow-xs">
                 <div className="flex items-center justify-between">
-                  <p className="text-xs font-bold tracking-[0.15em] text-stone-500">
-                    ORDERS
+                  <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-[var(--vanta-muted)]">
+                    LIFETIME ORDERS
                   </p>
-
-                  <ShoppingBag
-                    size={20}
-                    className="text-stone-400"
-                  />
+                  <ShoppingBag size={18} className="text-[var(--vanta-accent)]" />
                 </div>
-
-                <p className="mt-5 text-3xl font-semibold">
+                <p className="mt-4 text-3xl font-serif font-bold text-[var(--vanta-text)]">
                   {stats.totalOrders}
                 </p>
-
-                <p className="mt-2 text-xs text-stone-500">
-                  {stats.paidOrders} paid
-                </p>
+                <p className="mt-1 text-[11px] text-[var(--vanta-muted)]">{stats.paidOrders} paid shipments</p>
               </div>
 
-              <div className="border border-stone-200 bg-white p-6">
+              <div className="rounded-2xl border border-[var(--vanta-border)] bg-[var(--vanta-surface)] p-6 shadow-xs">
                 <div className="flex items-center justify-between">
-                  <p className="text-xs font-bold tracking-[0.15em] text-stone-500">
-                    PRODUCTS
+                  <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-[var(--vanta-muted)]">
+                    CATALOG ITEMS
                   </p>
-
-                  <Box
-                    size={20}
-                    className="text-stone-400"
-                  />
+                  <Box size={18} className="text-[var(--vanta-accent)]" />
                 </div>
-
-                <p className="mt-5 text-3xl font-semibold">
+                <p className="mt-4 text-3xl font-serif font-bold text-[var(--vanta-text)]">
                   {stats.totalProducts}
                 </p>
-
-                <p className="mt-2 text-xs text-stone-500">
-                  Active products
-                </p>
+                <p className="mt-1 text-[11px] text-[var(--vanta-muted)]">Active store products</p>
               </div>
 
-              <div className="border border-stone-200 bg-white p-6">
+              <div className="rounded-2xl border border-[var(--vanta-border)] bg-[var(--vanta-surface)] p-6 shadow-xs">
                 <div className="flex items-center justify-between">
-                  <p className="text-xs font-bold tracking-[0.15em] text-stone-500">
-                    ATTENTION
+                  <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-[var(--vanta-muted)]">
+                    ACTION REQUIRED
                   </p>
-
-                  <AlertTriangle
-                    size={20}
-                    className="text-stone-400"
-                  />
+                  <AlertTriangle size={18} className="text-amber-500" />
                 </div>
-
-                <p className="mt-5 text-3xl font-semibold">
-                  {stats.pendingOrders +
-                    stats.lowStockProducts}
+                <p className="mt-4 text-3xl font-serif font-bold text-[var(--vanta-text)]">
+                  {stats.pendingOrders + stats.lowStockProducts}
                 </p>
-
-                <p className="mt-2 text-xs text-stone-500">
-                  {stats.pendingOrders} pending orders ·{" "}
-                  {stats.lowStockProducts} low stock
+                <p className="mt-1 text-[11px] text-[var(--vanta-muted)]">
+                  {stats.pendingOrders} pending · {stats.lowStockProducts} low stock
                 </p>
               </div>
             </div>
 
             {/* Secondary stats */}
-
             <div className="mt-4 grid gap-4 sm:grid-cols-2">
-
-              <div className="border border-stone-200 bg-white p-6">
-                <div className="flex items-center gap-3">
-                  <Package
-                    size={20}
-                    className="text-stone-400"
-                  />
-
-                  <div>
-                    <p className="text-xs font-bold tracking-[0.15em] text-stone-500">
-                      PENDING ORDERS
-                    </p>
-
-                    <p className="mt-1 text-2xl font-semibold">
-                      {stats.pendingOrders}
-                    </p>
-                  </div>
+              <div className="rounded-2xl border border-[var(--vanta-border)] bg-[var(--vanta-surface)] p-5 shadow-xs flex items-center gap-3.5">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[var(--vanta-soft)] text-[var(--vanta-accent)]">
+                  <Package size={20} />
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-[var(--vanta-muted)]">
+                    UNFULFILLED ORDERS
+                  </p>
+                  <p className="mt-0.5 text-2xl font-bold font-serif text-[var(--vanta-text)]">
+                    {stats.pendingOrders}
+                  </p>
                 </div>
               </div>
 
-              <div className="border border-stone-200 bg-white p-6">
-                <div className="flex items-center gap-3">
-                  <AlertTriangle
-                    size={20}
-                    className="text-stone-400"
-                  />
-
-                  <div>
-                    <p className="text-xs font-bold tracking-[0.15em] text-stone-500">
-                      LOW STOCK
-                    </p>
-
-                    <p className="mt-1 text-2xl font-semibold">
-                      {stats.lowStockProducts}
-                    </p>
-                  </div>
+              <div className="rounded-2xl border border-[var(--vanta-border)] bg-[var(--vanta-surface)] p-5 shadow-xs flex items-center gap-3.5">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400">
+                  <AlertTriangle size={20} />
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-[var(--vanta-muted)]">
+                    LOW STOCK ALERTS
+                  </p>
+                  <p className="mt-0.5 text-2xl font-bold font-serif text-[var(--vanta-text)]">
+                    {stats.lowStockProducts}
+                  </p>
                 </div>
               </div>
             </div>
 
             {/* Recent orders */}
-
             <section className="mt-10">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between border-b border-[var(--vanta-border)] pb-4">
                 <div>
-                  <p className="text-xs font-bold tracking-[0.2em] text-stone-500">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--vanta-accent)]">
                     ACTIVITY
                   </p>
-
-                  <h2 className="mt-2 font-serif text-3xl">
+                  <h2 className="mt-1 font-serif text-2xl sm:text-3xl font-semibold text-[var(--vanta-text)]">
                     Recent Orders
                   </h2>
                 </div>
 
                 <Link
                   to="/admin/orders"
-                  className="hidden items-center gap-2 text-sm font-semibold sm:flex"
+                  className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-[0.1em] text-[var(--vanta-text)] hover:text-[var(--vanta-accent)] transition"
                 >
-                  View all
-                  <ArrowRight size={15} />
+                  <span>View All</span>
+                  <ArrowRight size={14} />
                 </Link>
               </div>
 
               {recentOrders.length === 0 ? (
-                <div className="mt-6 border border-stone-200 bg-white px-6 py-12 text-center">
-                  <ShoppingBag
-                    size={35}
-                    className="mx-auto text-stone-400"
-                  />
-
-                  <p className="mt-4 text-sm text-stone-500">
-                    No orders yet.
-                  </p>
+                <div className="mt-6 rounded-2xl border border-[var(--vanta-border)] bg-[var(--vanta-surface)] px-6 py-12 text-center shadow-xs">
+                  <ShoppingBag size={35} className="mx-auto text-[var(--vanta-muted)]" />
+                  <p className="mt-3 text-xs text-[var(--vanta-muted)]">No orders recorded yet.</p>
                 </div>
               ) : (
-                <div className="mt-6 overflow-hidden border border-stone-200 bg-white">
-                  <div className="hidden grid-cols-[1.3fr_1fr_1fr_1fr] border-b border-stone-200 px-6 py-4 text-[10px] font-bold tracking-[0.15em] text-stone-400 md:grid">
+                <div className="mt-6 overflow-hidden rounded-2xl border border-[var(--vanta-border)] bg-[var(--vanta-surface)] shadow-xs">
+                  <div className="hidden grid-cols-[1.3fr_1fr_1fr_1fr] border-b border-[var(--vanta-border)] bg-[var(--vanta-soft)]/50 px-6 py-3.5 text-[10px] font-bold tracking-[0.15em] text-[var(--vanta-muted)] md:grid">
                     <span>ORDER</span>
                     <span>CUSTOMER</span>
                     <span>STATUS</span>
@@ -343,115 +281,87 @@ const AdminDashboard = () => {
                     <Link
                       key={order._id}
                       to={`/admin/orders/${order._id}`}
-                      className="grid gap-3 border-b border-stone-100 px-6 py-5 transition last:border-b-0 hover:bg-stone-50 md:grid-cols-[1.3fr_1fr_1fr_1fr] md:items-center"
+                      className="grid gap-3 border-b border-[var(--vanta-border)]/50 px-6 py-4.5 transition last:border-b-0 hover:bg-[var(--vanta-soft)]/30 md:grid-cols-[1.3fr_1fr_1fr_1fr] md:items-center text-xs"
                     >
                       <div>
-                        <p className="text-sm font-semibold">
+                        <p className="font-semibold text-xs text-[var(--vanta-text)]">
                           #{order._id.slice(-8)}
                         </p>
-
-                        <p className="mt-1 text-xs text-stone-500">
+                        <p className="mt-0.5 text-[11px] text-[var(--vanta-muted)]">
                           {formatDate(order.createdAt)}
                         </p>
                       </div>
 
                       <div>
-                        <p className="text-sm">
-                          {order.user?.name ||
-                            "Unknown customer"}
+                        <p className="font-medium text-[var(--vanta-text)]">
+                          {order.user?.name || "Customer"}
                         </p>
-
-                        <p className="mt-1 text-xs text-stone-500">
+                        <p className="text-[11px] text-[var(--vanta-muted)] truncate max-w-[180px]">
                           {order.user?.email || ""}
                         </p>
                       </div>
 
                       <div>
-                        <span className="inline-flex border border-stone-200 bg-stone-50 px-3 py-1.5 text-[10px] font-bold uppercase">
+                        <span className="inline-flex rounded-lg border border-[var(--vanta-border)] bg-[var(--vanta-soft)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-[var(--vanta-text)]">
                           {order.orderStatus}
                         </span>
                       </div>
 
                       <div className="flex items-center justify-between md:justify-start md:gap-3">
-                        <p className="text-sm font-semibold">
+                        <p className="font-bold text-xs text-[var(--vanta-text)]">
                           {formatCurrency(order.total)}
                         </p>
-
-                        <ArrowRight
-                          size={15}
-                          className="text-stone-400"
-                        />
+                        <ArrowRight size={13} className="text-[var(--vanta-muted)]" />
                       </div>
                     </Link>
                   ))}
                 </div>
               )}
-
-              <Link
-                to="/admin/orders"
-                className="mt-5 flex items-center justify-center gap-2 border border-stone-300 bg-white px-5 py-3 text-sm font-semibold sm:hidden"
-              >
-                View all orders
-                <ArrowRight size={15} />
-              </Link>
             </section>
 
-            {/* Quick actions */}
-
-            <section className="mt-10 grid gap-4 md:grid-cols-2">
-
+            {/* Quick Actions */}
+            <section className="mt-8 grid gap-4 md:grid-cols-2">
               <Link
                 to="/admin/orders"
-                className="group border border-stone-200 bg-white p-7 transition hover:border-stone-400"
+                className="group rounded-2xl border border-[var(--vanta-border)] bg-[var(--vanta-surface)] p-6 shadow-xs transition hover:border-[var(--vanta-text)]/40 hover:shadow-md"
               >
                 <div className="flex items-center justify-between">
-                  <ShoppingBag
-                    size={22}
-                    className="text-stone-500"
-                  />
-
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--vanta-soft)] text-[var(--vanta-text)]">
+                    <ShoppingBag size={20} />
+                  </div>
                   <ArrowRight
-                    size={18}
-                    className="transition group-hover:translate-x-1"
+                    size={16}
+                    className="text-[var(--vanta-muted)] transition group-hover:translate-x-1 group-hover:text-[var(--vanta-text)]"
                   />
                 </div>
-
-                <h3 className="mt-8 font-serif text-2xl">
+                <h3 className="mt-5 font-serif text-xl font-semibold text-[var(--vanta-text)]">
                   Manage Orders
                 </h3>
-
-                <p className="mt-2 text-sm text-stone-500">
-                  Review customer orders and update
-                  fulfillment status.
+                <p className="mt-1.5 text-xs text-[var(--vanta-muted)]">
+                  Review customer orders, update tracking and fulfillment status.
                 </p>
               </Link>
 
               <Link
                 to="/admin/products"
-                className="group border border-stone-200 bg-white p-7 transition hover:border-stone-400"
+                className="group rounded-2xl border border-[var(--vanta-border)] bg-[var(--vanta-surface)] p-6 shadow-xs transition hover:border-[var(--vanta-text)]/40 hover:shadow-md"
               >
                 <div className="flex items-center justify-between">
-                  <Box
-                    size={22}
-                    className="text-stone-500"
-                  />
-
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--vanta-soft)] text-[var(--vanta-text)]">
+                    <Box size={20} />
+                  </div>
                   <ArrowRight
-                    size={18}
-                    className="transition group-hover:translate-x-1"
+                    size={16}
+                    className="text-[var(--vanta-muted)] transition group-hover:translate-x-1 group-hover:text-[var(--vanta-text)]"
                   />
                 </div>
-
-                <h3 className="mt-8 font-serif text-2xl">
+                <h3 className="mt-5 font-serif text-xl font-semibold text-[var(--vanta-text)]">
                   Manage Products
                 </h3>
-
-                <p className="mt-2 text-sm text-stone-500">
-                  Add products, update inventory and
-                  manage your collection.
+                <p className="mt-1.5 text-xs text-[var(--vanta-muted)]">
+                  Add products, update inventory levels, and manage catalog visibility.
                 </p>
               </Link>
-
             </section>
           </>
         )}

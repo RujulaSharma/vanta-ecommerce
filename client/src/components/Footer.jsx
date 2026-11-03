@@ -1,7 +1,18 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowUpRight } from "lucide-react";
+import toast from "react-hot-toast";
 
 const Footer = () => {
+  const [newsletterEmail, setNewsletterEmail] = useState("");
+
+  const handleSubscribe = (e) => {
+    e.preventDefault();
+    if (!newsletterEmail) return;
+    toast.success("Welcome to Vanta Privé. You're on the exclusive guest list.");
+    setNewsletterEmail("");
+  };
+
   return (
     <footer className="border-t border-[var(--vanta-border)] bg-[var(--vanta-surface)] text-[var(--vanta-text)] transition-colors duration-200">
       <div className="mx-auto max-w-[1520px] px-4 sm:px-6 lg:px-8 py-16 lg:py-20">
@@ -93,15 +104,14 @@ const Footer = () => {
               Subscribe to receive exclusive seasonal previews, runway invitations & private member discounts.
             </p>
             <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                alert("Thank you for subscribing to Vanta Privé.");
-              }}
+              onSubmit={handleSubscribe}
               className="mt-4 flex rounded-xl border border-[var(--vanta-border)] bg-[var(--vanta-soft)] p-1 focus-within:border-[var(--vanta-text)]"
             >
               <input
                 type="email"
                 required
+                value={newsletterEmail}
+                onChange={(e) => setNewsletterEmail(e.target.value)}
                 placeholder="Enter your email address"
                 className="w-full bg-transparent px-3 text-xs text-[var(--vanta-text)] outline-none placeholder:text-[var(--vanta-muted)]"
               />

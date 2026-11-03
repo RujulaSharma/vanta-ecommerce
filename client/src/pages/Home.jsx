@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowRight,
   ChevronLeft,
@@ -112,6 +113,16 @@ export default function Home() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [activeTrendingCategory, setActiveTrendingCategory] = useState("all");
   const [addingId, setAddingId] = useState(null);
+  const [isPaused, setIsPaused] = useState(false);
+
+  // Auto-advance hero carousel with pause on hover
+  useEffect(() => {
+    if (isPaused) return undefined;
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % HERO_SLIDES.length);
+    }, 6000);
+    return () => clearInterval(timer);
+  }, [isPaused]);
 
   const wishlistItems = useWishlistStore((state) => state.items);
   const toggleWishlist = useWishlistStore((state) => state.toggle);
@@ -275,9 +286,11 @@ export default function Home() {
     const secondaryImage = product.images?.[1];
 
     return (
-      <article
+      <motion.article
         key={product._id}
-        className="group relative flex flex-col rounded-2xl border border-[var(--vanta-border)] bg-[var(--vanta-surface)] p-3 transition duration-300 hover:shadow-xl hover:border-[var(--vanta-text)]/30 shrink-0 w-[240px] sm:w-[260px] md:w-[270px] xl:w-full min-w-0"
+        whileHover={{ y: -5 }}
+        transition={{ duration: 0.25, ease: "easeOut" }}
+        className="group relative flex flex-col rounded-2xl border border-[var(--vanta-border)] bg-[var(--vanta-surface)] p-3 transition-shadow duration-300 hover:shadow-xl hover:border-[var(--vanta-text)]/30 shrink-0 w-[240px] sm:w-[260px] md:w-[270px] xl:w-full min-w-0"
       >
         {/* IMAGE CONTAINER */}
         <div className="relative aspect-[4/5] w-full overflow-hidden rounded-xl bg-[var(--vanta-soft)]">
@@ -386,7 +399,7 @@ export default function Home() {
             )}
           </div>
         </div>
-      </article>
+      </motion.article>
     );
   };
 
@@ -397,66 +410,108 @@ export default function Home() {
       {/* ========================================================
           1. WIDE CINEMATIC HERO SECTION
           ======================================================== */}
-      <section className="pt-3 sm:pt-5">
+      <motion.section
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="pt-3 sm:pt-5"
+      >
         <div className="mx-auto max-w-[1520px] px-4 sm:px-6 lg:px-8">
-          <div className="relative overflow-hidden rounded-3xl border border-[var(--vanta-border)] bg-gradient-to-br from-[#f8f6f0] via-[#f1eee4] to-[#e8e4d8] dark:from-[#171817] dark:via-[#131413] dark:to-[#0f100f] shadow-md group">
-            <div className="grid grid-cols-1 lg:grid-cols-12 min-h-[460px] md:min-h-[500px] lg:min-h-[540px] xl:min-h-[580px] items-center">
-              {/* TEXT COLUMN (LEFT SAFE ZONE) */}
-              <div className="lg:col-span-6 xl:col-span-7 p-6 sm:p-10 lg:p-14 xl:p-16 flex flex-col justify-center z-10">
-                <div className="inline-flex items-center gap-2 rounded-full border border-[var(--vanta-accent)]/40 bg-[var(--vanta-accent)]/10 px-3.5 py-1 text-[10px] sm:text-xs font-bold uppercase tracking-[0.24em] text-[var(--vanta-accent)] w-fit mb-4">
-                  <Sparkles size={12} />
-                  <span>{activeSlideData.kicker}</span>
-                </div>
-
-                <h1 className="font-serif text-3xl sm:text-5xl lg:text-5xl xl:text-6xl font-semibold leading-[1.08] tracking-[-0.03em] text-[var(--vanta-text)]">
-                  {activeSlideData.title}
-                </h1>
-
-                <p className="mt-4 max-w-[540px] text-xs sm:text-sm lg:text-base leading-relaxed text-[var(--vanta-muted)]">
-                  {activeSlideData.description}
-                </p>
-
-                {/* CTA ACTIONS */}
-                <div className="mt-7 sm:mt-8 flex flex-wrap items-center gap-3.5">
-                  <Link
-                    to={activeSlideData.primaryLink}
-                    className="inline-flex items-center gap-2.5 rounded-full bg-[var(--vanta-dark)] text-white dark:bg-white dark:text-stone-900 px-7 py-3.5 text-xs font-bold uppercase tracking-[0.14em] shadow-md transition hover:scale-[1.02] hover:opacity-95"
+          <div
+            onMouseEnter={() => setIsPaused(true)}
+            onMouseLeave={() => setIsPaused(false)}
+            className="relative overflow-hidden rounded-3xl border border-[var(--vanta-border)] bg-gradient-to-br from-[#f8f6f0] via-[#f1eee4] to-[#e8e4d8] dark:from-[#171817] dark:via-[#131413] dark:to-[#0f100f] shadow-md group"
+          >
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentSlide}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.5, ease: "easeInOut" }}
+                className="grid grid-cols-1 lg:grid-cols-12 min-h-[460px] md:min-h-[500px] lg:min-h-[540px] xl:min-h-[580px] items-center"
+              >
+                {/* TEXT COLUMN (LEFT SAFE ZONE) */}
+                <div className="lg:col-span-6 xl:col-span-7 p-6 sm:p-10 lg:p-14 xl:p-16 flex flex-col justify-center z-10">
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1, duration: 0.4 }}
+                    className="inline-flex items-center gap-2 rounded-full border border-[var(--vanta-accent)]/40 bg-[var(--vanta-accent)]/10 px-3.5 py-1 text-[10px] sm:text-xs font-bold uppercase tracking-[0.24em] text-[var(--vanta-accent)] w-fit mb-4"
                   >
-                    <span>{activeSlideData.primaryCta}</span>
-                    <ArrowRight size={15} />
-                  </Link>
+                    <Sparkles size={12} />
+                    <span>{activeSlideData.kicker}</span>
+                  </motion.div>
 
-                  <Link
-                    to={activeSlideData.secondaryLink}
-                    className="inline-flex items-center gap-2 rounded-full border border-[var(--vanta-border)] bg-[var(--vanta-surface)]/80 backdrop-blur-xs px-6 py-3.5 text-xs font-bold uppercase tracking-[0.12em] text-[var(--vanta-text)] transition hover:bg-[var(--vanta-surface)] hover:border-[var(--vanta-text)]"
+                  <motion.h1
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.15, duration: 0.45 }}
+                    className="font-serif text-3xl sm:text-5xl lg:text-5xl xl:text-6xl font-semibold leading-[1.08] tracking-[-0.03em] text-[var(--vanta-text)]"
                   >
-                    <span>{activeSlideData.secondaryCta}</span>
-                  </Link>
+                    {activeSlideData.title}
+                  </motion.h1>
+
+                  <motion.p
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2, duration: 0.45 }}
+                    className="mt-4 max-w-[540px] text-xs sm:text-sm lg:text-base leading-relaxed text-[var(--vanta-muted)]"
+                  >
+                    {activeSlideData.description}
+                  </motion.p>
+
+                  {/* CTA ACTIONS */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 14 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.25, duration: 0.45 }}
+                    className="mt-7 sm:mt-8 flex flex-wrap items-center gap-3.5"
+                  >
+                    <Link
+                      to={activeSlideData.primaryLink}
+                      className="inline-flex items-center gap-2.5 rounded-full bg-[var(--vanta-dark)] text-white dark:bg-white dark:text-stone-900 px-7 py-3.5 text-xs font-bold uppercase tracking-[0.14em] shadow-md transition hover:scale-[1.02] hover:opacity-95"
+                    >
+                      <span>{activeSlideData.primaryCta}</span>
+                      <ArrowRight size={15} />
+                    </Link>
+
+                    <Link
+                      to={activeSlideData.secondaryLink}
+                      className="inline-flex items-center gap-2 rounded-full border border-[var(--vanta-border)] bg-[var(--vanta-surface)]/80 backdrop-blur-xs px-6 py-3.5 text-xs font-bold uppercase tracking-[0.12em] text-[var(--vanta-text)] transition hover:bg-[var(--vanta-surface)] hover:border-[var(--vanta-text)]"
+                    >
+                      <span>{activeSlideData.secondaryCta}</span>
+                    </Link>
+                  </motion.div>
+
+                  {/* HIGHLIGHT PERKS */}
+                  <div className="mt-7 sm:mt-8 pt-5 border-t border-[var(--vanta-border)]/70 flex flex-wrap items-center gap-6 text-[11px] text-[var(--vanta-muted)]">
+                    <span className="flex items-center gap-1.5 font-medium">
+                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                      Express Dispatch (24-48h)
+                    </span>
+                    <span className="flex items-center gap-1.5 font-medium">
+                      <span className="h-1.5 w-1.5 rounded-full bg-[var(--vanta-accent)]" />
+                      {activeSlideData.accent}
+                    </span>
+                  </div>
                 </div>
 
-                {/* HIGHLIGHT PERKS */}
-                <div className="mt-7 sm:mt-8 pt-5 border-t border-[var(--vanta-border)]/70 flex flex-wrap items-center gap-6 text-[11px] text-[var(--vanta-muted)]">
-                  <span className="flex items-center gap-1.5 font-medium">
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                    Express Dispatch (24-48h)
-                  </span>
-                  <span className="flex items-center gap-1.5 font-medium">
-                    <span className="h-1.5 w-1.5 rounded-full bg-[var(--vanta-accent)]" />
-                    {activeSlideData.accent}
-                  </span>
+                {/* IMAGE COLUMN (RIGHT FASHION SHOWCASE) */}
+                <div className="lg:col-span-6 xl:col-span-5 h-full min-h-[300px] sm:min-h-[380px] lg:min-h-full relative overflow-hidden flex items-center justify-center">
+                  <motion.img
+                    key={`img-${currentSlide}`}
+                    initial={{ scale: 1.05, opacity: 0.8 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ duration: 0.7, ease: "easeOut" }}
+                    src={activeSlideData.image}
+                    alt={activeSlideData.title}
+                    className="h-full w-full object-cover object-[center_25%]"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent lg:hidden" />
                 </div>
-              </div>
-
-              {/* IMAGE COLUMN (RIGHT FASHION SHOWCASE) */}
-              <div className="lg:col-span-6 xl:col-span-5 h-full min-h-[300px] sm:min-h-[380px] lg:min-h-full relative overflow-hidden flex items-center justify-center">
-                <img
-                  src={activeSlideData.image}
-                  alt={activeSlideData.title}
-                  className="h-full w-full object-cover object-[center_25%] transition-all duration-700 ease-out"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent lg:hidden" />
-              </div>
-            </div>
+              </motion.div>
+            </AnimatePresence>
 
             {/* FLOATING SIDE NAVIGATION ARROWS (MATCHING PICKSY) */}
             <button
@@ -495,20 +550,27 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* ========================================================
           2. COMPACT BENEFITS STRIP
           ======================================================== */}
-      <section>
+      <motion.section
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-50px" }}
+        transition={{ duration: 0.5 }}
+      >
         <div className="mx-auto max-w-[1520px] px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             {BENEFITS.map((benefit, index) => {
               const Icon = benefit.icon;
               return (
-                <div
+                <motion.div
                   key={index}
-                  className="flex items-center gap-3.5 rounded-2xl border border-[var(--vanta-border)] bg-[var(--vanta-surface)] p-4 sm:p-5 shadow-xs"
+                  whileHover={{ y: -3 }}
+                  transition={{ duration: 0.2 }}
+                  className="flex items-center gap-3.5 rounded-2xl border border-[var(--vanta-border)] bg-[var(--vanta-surface)] p-4 sm:p-5 shadow-xs transition-shadow duration-200 hover:shadow-md hover:border-[var(--vanta-text)]/30"
                 >
                   <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[var(--vanta-soft)] text-[var(--vanta-accent)]">
                     <Icon size={20} strokeWidth={1.8} />
@@ -521,17 +583,22 @@ export default function Home() {
                       {benefit.description}
                     </p>
                   </div>
-                </div>
+                </motion.div>
               );
             })}
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* ========================================================
           3. SHOP BY CATEGORY DISCOVERY
           ======================================================== */}
-      <section>
+      <motion.section
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-60px" }}
+        transition={{ duration: 0.55 }}
+      >
         <div className="mx-auto max-w-[1520px] px-4 sm:px-6 lg:px-8">
           <div className="mb-6 sm:mb-8 flex items-end justify-between gap-4 border-b border-[var(--vanta-border)] pb-4">
             <div>
@@ -561,7 +628,7 @@ export default function Home() {
                 <Link
                   key={cat._id || slug}
                   to={`/category/${slug}`}
-                  className="group relative flex flex-col overflow-hidden rounded-2xl border border-[var(--vanta-border)] bg-[var(--vanta-surface)] shadow-xs transition duration-300 hover:shadow-xl hover:border-[var(--vanta-text)]/40"
+                  className="group relative flex flex-col overflow-hidden rounded-2xl border border-[var(--vanta-border)] bg-[var(--vanta-surface)] shadow-xs transition duration-300 hover:shadow-xl hover:border-[var(--vanta-text)]/40 hover:-translate-y-1"
                 >
                   <div className="relative aspect-[3/4] w-full overflow-hidden bg-[var(--vanta-soft)]">
                     <img
@@ -591,12 +658,17 @@ export default function Home() {
             })}
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* ========================================================
           4. TRENDING NOW (HIGH DENSITY CAROUSEL & TABS)
           ======================================================== */}
-      <section>
+      <motion.section
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-50px" }}
+        transition={{ duration: 0.55 }}
+      >
         <div className="mx-auto max-w-[1520px] px-4 sm:px-6 lg:px-8">
           <div className="mb-6 flex flex-col md:flex-row md:items-end md:justify-between gap-4 border-b border-[var(--vanta-border)] pb-4">
             <div>
@@ -667,12 +739,18 @@ export default function Home() {
             )}
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* ========================================================
           5. HANDBAGS & LEATHER SPOTLIGHT (SPLIT HERO + CAROUSEL)
           ======================================================== */}
-      <section className="bg-[var(--vanta-surface)] py-12 sm:py-16 border-y border-[var(--vanta-border)]">
+      <motion.section
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-50px" }}
+        transition={{ duration: 0.55 }}
+        className="bg-[var(--vanta-surface)] py-12 sm:py-16 border-y border-[var(--vanta-border)]"
+      >
         <div className="mx-auto max-w-[1520px] px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
             {/* FEATURE BANNER */}
@@ -713,12 +791,17 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* ========================================================
           6. NEW ARRIVALS (FRESH STYLES)
           ======================================================== */}
-      <section>
+      <motion.section
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-50px" }}
+        transition={{ duration: 0.55 }}
+      >
         <div className="mx-auto max-w-[1520px] px-4 sm:px-6 lg:px-8">
           <div className="mb-6 flex items-end justify-between gap-4 border-b border-[var(--vanta-border)] pb-4">
             <div>
@@ -764,13 +847,18 @@ export default function Home() {
             {newArrivals.slice(0, 5).map((p) => renderProductCard(p))}
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* ========================================================
           7. FOOTWEAR & ACCENTS SPOTLIGHT
           ======================================================== */}
       {footwearAndJewelry.length > 0 && (
-        <section>
+        <motion.section
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.55 }}
+        >
           <div className="mx-auto max-w-[1520px] px-4 sm:px-6 lg:px-8">
             <div className="mb-6 flex items-end justify-between gap-4 border-b border-[var(--vanta-border)] pb-4">
               <div>
@@ -817,13 +905,18 @@ export default function Home() {
               {footwearAndJewelry.slice(0, 5).map((p) => renderProductCard(p))}
             </div>
           </div>
-        </section>
+        </motion.section>
       )}
 
       {/* ========================================================
           8. EDITORIAL LOOKBOOK PROMO BANNER
           ======================================================== */}
-      <section>
+      <motion.section
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-50px" }}
+        transition={{ duration: 0.55 }}
+      >
         <div className="mx-auto max-w-[1520px] px-4 sm:px-6 lg:px-8">
           <div className="relative overflow-hidden rounded-3xl bg-[#121312] text-white p-8 sm:p-12 lg:p-16 border border-stone-800 shadow-xl">
             <div className="absolute right-0 top-0 bottom-0 w-1/2 bg-gradient-to-l from-[var(--vanta-accent)]/20 to-transparent blur-3xl pointer-events-none" />
@@ -860,12 +953,18 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* ========================================================
           9. CUSTOMER LOVE & TESTIMONIALS
           ======================================================== */}
-      <section className="pt-4">
+      <motion.section
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-50px" }}
+        transition={{ duration: 0.55 }}
+        className="pt-4"
+      >
         <div className="mx-auto max-w-[1520px] px-4 sm:px-6 lg:px-8">
           <div className="mb-8 text-center max-w-2xl mx-auto">
             <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-[var(--vanta-accent)]">
@@ -881,9 +980,11 @@ export default function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
             {REVIEWS.map((rev, index) => (
-              <div
+              <motion.div
                 key={index}
-                className="flex flex-col justify-between rounded-2xl border border-[var(--vanta-border)] bg-[var(--vanta-surface)] p-6 sm:p-7 shadow-xs"
+                whileHover={{ y: -4 }}
+                transition={{ duration: 0.25 }}
+                className="flex flex-col justify-between rounded-2xl border border-[var(--vanta-border)] bg-[var(--vanta-surface)] p-6 sm:p-7 shadow-xs transition-shadow duration-200 hover:shadow-lg hover:border-[var(--vanta-text)]/30"
               >
                 <div>
                   <div className="flex items-center gap-1 text-amber-500">
@@ -908,11 +1009,11 @@ export default function Home() {
                     Verified Buyer
                   </span>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
-      </section>
+      </motion.section>
     </main>
   );
 }

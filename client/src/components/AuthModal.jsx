@@ -1,6 +1,7 @@
 import { tw } from "../utils/twStyles.js";
 import { useEffect } from "react";
 import { X } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const AUTH_IMAGE = "https://res.cloudinary.com/q9toon94/image/upload/v1786812733/vanta-bags/products/handbag-4.jpg";
 import { useAuthModal } from "../context/AuthModalContext";
@@ -27,44 +28,58 @@ const AuthModal = () => {
     };
   }, [isOpen, closeAuth]);
 
-  if (!isOpen) return null;
-
   return (
-    <div
-      className={tw("vanta-auth-overlay")}
-      role="presentation"
-      onMouseDown={(event) => {
-        if (event.target === event.currentTarget) closeAuth();
-      }}
-    >
-      <div
-        className={tw("vanta-auth-modal")}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="vanta-auth-title"
-        onMouseDown={(event) => event.stopPropagation()}
-      >
-        <div className={tw("vanta-auth-image")}>
-          <img src={AUTH_IMAGE} alt="VANTA Bags collection" />
-          <div className={tw("vanta-auth-image-overlay")} />
-          <div className={tw("vanta-auth-image-copy")}>
-            <span>VANTA BAGS</span>
-            <strong>Carry your<br />signature.</strong>
-          </div>
-        </div>
-
-        <button
-          type="button"
-          className={tw("vanta-auth-close")}
-          onClick={closeAuth}
-          aria-label="Close"
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          className={tw("vanta-auth-overlay")}
+          role="presentation"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) closeAuth();
+          }}
         >
-          <X size={18} strokeWidth={1.8} />
-        </button>
+          <motion.div
+            className={tw("vanta-auth-modal")}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="vanta-auth-title"
+            initial={{ opacity: 0, scale: 0.94, y: 12 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 8 }}
+            transition={{ type: "spring", damping: 25, stiffness: 320 }}
+            onMouseDown={(event) => event.stopPropagation()}
+          >
+            <div className={tw("vanta-auth-image")}>
+              <img src={AUTH_IMAGE} alt="VANTA Bags collection" />
+              <div className={tw("vanta-auth-image-overlay")} />
+              <div className={tw("vanta-auth-image-copy")}>
+                <span>VANTA BAGS</span>
+                <strong>
+                  Carry your
+                  <br />
+                  signature.
+                </strong>
+              </div>
+            </div>
 
-        {mode === "register" ? <Register /> : <Login />}
-      </div>
-    </div>
+            <button
+              type="button"
+              className={tw("vanta-auth-close")}
+              onClick={closeAuth}
+              aria-label="Close"
+            >
+              <X size={18} strokeWidth={1.8} />
+            </button>
+
+            {mode === "register" ? <Register /> : <Login />}
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 };
 

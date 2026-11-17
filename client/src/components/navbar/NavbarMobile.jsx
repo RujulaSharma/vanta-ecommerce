@@ -40,6 +40,7 @@ const NavbarMobile = ({
           setMobileMenuOpen((v) => !v);
           setMobileSearchOpen(false);
         }}
+        aria-expanded={mobileMenuOpen}
         aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
       >
         {mobileMenuOpen ? <X size={21} strokeWidth={1.8} /> : <Menu size={21} strokeWidth={1.8} />}
@@ -52,6 +53,7 @@ const NavbarMobile = ({
           setMobileSearchOpen((v) => !v);
           setMobileMenuOpen(false);
         }}
+        aria-expanded={mobileSearchOpen}
         aria-label="Search"
       >
         <Search size={20} strokeWidth={1.7} />
@@ -202,9 +204,9 @@ const NavbarMobile = ({
             <span>About</span>
           </Link>
 
-          <Link to="/contact" onClick={closeMobileMenu} className={tw("vanta-mobile-menu-item")}>
+          <a href="mailto:support@vanta.com" onClick={closeMobileMenu} className={tw("vanta-mobile-menu-item")}>
             <span>Contact</span>
-          </Link>
+          </a>
         </div>
 
         <div className={tw("vanta-mobile-menu-theme")}>

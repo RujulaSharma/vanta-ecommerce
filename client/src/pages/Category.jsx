@@ -38,11 +38,7 @@ export default function Category() {
   const roots = useMemo(() => getRootCategories(categories), [categories]);
 
   if (slug) {
-    return (
-      <main className="min-h-screen bg-[var(--vanta-bg)] text-[var(--vanta-text)]">
-        <Products categorySlug={slug} />
-      </main>
-    );
+    return <Products categorySlug={slug} />;
   }
 
   const displayRoots = roots.length ? roots : fallbackRootCategories;
@@ -54,7 +50,7 @@ export default function Category() {
           <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-[var(--vanta-muted)]">VANTA COLLECTION</p>
           <h1 className="mt-3 font-serif text-5xl tracking-[-0.05em] sm:text-6xl">Shop by category.</h1>
           <p className="mt-5 max-w-2xl text-sm leading-7 text-[var(--vanta-muted)]">
-            Explore the five VANTA worlds, then narrow down to the exact style you want.
+            Browse handbags, clothing, footwear and jewelry by collection.
           </p>
         </div>
 
@@ -63,7 +59,7 @@ export default function Category() {
         )}
 
         <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
-          {displayRoots.map((category, index) => {
+          {displayRoots.map((category) => {
             const key = category.slug || normalizeCategory(category.name);
             const image = category.image || categoryImage(category) || heroImage;
             const children = getCategoryChildren(categories, category);
@@ -77,7 +73,6 @@ export default function Category() {
                     <span className="absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-full bg-white/90 text-stone-900 opacity-0 backdrop-blur transition group-hover:opacity-100">
                       <ArrowUpRight size={16} />
                     </span>
-                    <span className="absolute left-3 top-3 text-[9px] font-bold tracking-[0.18em] text-white drop-shadow">{String(index + 1).padStart(2, "0")}</span>
                   </div>
                 </Link>
 
@@ -85,7 +80,7 @@ export default function Category() {
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <h2 className="font-serif text-xl">{category.name}</h2>
-                      <p className="mt-1 text-[11px] leading-5 text-[var(--vanta-muted)]">{category.description || "Designed for modern everyday style."}</p>
+                      <p className="mt-1 text-[11px] leading-5 text-[var(--vanta-muted)]">{category.description || ""}</p>
                     </div>
                     <ArrowRight size={14} className="mt-1 shrink-0 text-[var(--vanta-muted)]" />
                   </div>

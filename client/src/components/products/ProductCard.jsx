@@ -1,3 +1,4 @@
+import { m as motion } from "framer-motion";
 import { Heart } from "lucide-react";
 import { Link } from "react-router-dom";
 import { tw } from "../../utils/twStyles.js";
@@ -11,37 +12,35 @@ const ProductCard = ({ product, isWishlisted, toggleWishlist }) => {
   const discounted = product.compareAtPrice > product.price;
 
   return (
-    <article className={tw("vanta-collection-product")} key={product._id}>
+    <motion.article
+      className="vanta-catalog-card relative min-w-0"
+      initial={{ opacity: 0, y: 12 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.12 }}
+      transition={{ duration: 0.4 }}
+    >
       <Link to={`/products/${product.slug}`} className={tw("vanta-collection-product-link")}>
         <div className={tw("vanta-collection-product-image")}>
           {normalizeImageUrl(product.images?.[0]) ? (
             <img
               src={normalizeImageUrl(product.images?.[0])}
               alt={product.name}
+              loading="lazy"
+              decoding="async"
             />
           ) : (
             <div className={tw("vanta-image-placeholder")}>VANTA</div>
           )}
 
           {product.isFeatured && product.stock > 0 && (
-            <span className={tw("vanta-collection-badge")}>NEW</span>
+            <span className={tw("vanta-collection-badge")}>Selected</span>
           )}
 
           {product.stock === 0 && (
             <span className={tw("vanta-collection-badge sold")}>Sold out</span>
           )}
 
-          <button
-            type="button"
-            className={tw(`vanta-product-heart ${isWishlisted ? "active" : ""}`)}
-            aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
-            onClick={(event) => {
-              event.preventDefault();
-              toggleWishlist(product);
-            }}
-          >
-            <Heart size={15} fill={isWishlisted ? "currentColor" : "none"} />
-          </button>
+
         </div>
 
         <div className={tw("vanta-collection-product-meta")}>
@@ -67,8 +66,8 @@ const ProductCard = ({ product, isWishlisted, toggleWishlist }) => {
 
           {rating > 0 && (
             <div className={tw("vanta-rating")}>
-              <span>★★★★★</span>
-              <small>{rating.toFixed(1)}</small>
+              <span aria-hidden="true">★</span>
+              <small aria-label={`Rated ${rating.toFixed(1)} out of 5`}>{rating.toFixed(1)}</small>
             </div>
           )}
 
@@ -80,7 +79,16 @@ const ProductCard = ({ product, isWishlisted, toggleWishlist }) => {
           )}
         </div>
       </Link>
-    </article>
+          <button
+            type="button"
+            className={tw(`vanta-product-heart ${isWishlisted ? "active" : ""}`)}
+            aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+            aria-pressed={isWishlisted}
+            onClick={() => toggleWishlist(product)}
+          >
+            <Heart size={15} fill={isWishlisted ? "currentColor" : "none"} />
+          </button>
+    </motion.article>
   );
 };
 

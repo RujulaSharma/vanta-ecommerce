@@ -6,21 +6,23 @@ import {
   generateRefreshToken,
 } from "../utils/generateToken.js";
 
+const isProduction = process.env.NODE_ENV === "production";
+const cookieOptions = {
+  httpOnly: true,
+  secure: isProduction,
+  sameSite: isProduction ? "none" : "lax",
+  path: "/",
+};
+
 const accessTokenCookieOptions = {
-    httpOnly: true,
-    secure: true,
-    sameSite: "none",
-    path: "/",
-    maxAge: 15 * 60 * 1000,
-  };
-  
-  const refreshTokenCookieOptions = {
-    httpOnly: true,
-    secure: true,
-    sameSite: "none",
-    path: "/",
-    maxAge: 7 * 24 * 60 * 60 * 1000,
-  };
+  ...cookieOptions,
+  maxAge: 15 * 60 * 1000,
+};
+
+const refreshTokenCookieOptions = {
+  ...cookieOptions,
+  maxAge: 7 * 24 * 60 * 60 * 1000,
+};
 
 export const register = async (req, res) => {
   const { name, email, password } = req.body;
@@ -143,13 +145,6 @@ export const login = async (req, res) => {
   });
 };
 export const logout = async (req, res) => {
-    const cookieOptions = {
-        httpOnly: true,
-        secure: true,
-        sameSite: "none",
-        path: "/",
-      };
-  
     res.clearCookie("accessToken", cookieOptions);
     res.clearCookie("refreshToken", cookieOptions);
   

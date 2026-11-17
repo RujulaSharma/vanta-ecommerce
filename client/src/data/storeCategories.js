@@ -1,3 +1,5 @@
+import handbagImage from "../assets/category/handbag-editorial.webp";
+
 export const normalizeCategory = (value = "") =>
     String(value)
       .toLowerCase()
@@ -35,41 +37,36 @@ export const fallbackRootCategories = [
     _id: "cat_bags",
     name: "Bags",
     slug: "bags",
-    description: "Luxury leather totes, structured satchels and everyday crossbody bags.",
-    image: "https://res.cloudinary.com/q9toon94/image/upload/v1786812733/vanta-bags/products/handbag-4.jpg",
-    itemCount: "24+ Styles",
+    description: "Structured satchels, totes and crossbody bags.",
+    image: handbagImage,
   },
   {
     _id: "cat_dresses",
     name: "Dresses",
     slug: "dresses",
-    description: "Sculpted evening gowns, effortless midi silhouettes & summer wear.",
-    image: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?auto=format&fit=crop&w=800&q=85",
-    itemCount: "18+ Styles",
+    description: "Fluid midis, slip dresses and evening silhouettes.",
+    image: "/img/slipdress.jpg",
   },
   {
     _id: "cat_footwear",
     name: "Footwear",
     slug: "footwear",
-    description: "Architectural heels, minimalist flats and handcrafted leather boots.",
-    image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=800&q=85",
-    itemCount: "16+ Styles",
+    description: "Sculptural heels, pared-back flats and boots.",
+    image: "/img/shoehero.jpg",
   },
   {
     _id: "cat_jewelry",
     name: "Jewelry",
     slug: "jewelry",
-    description: "Fine 18k gold-plated accents, statement earrings & pendant necklaces.",
-    image: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=800&q=85",
-    itemCount: "20+ Styles",
+    description: "Earrings, pendants and other finishing pieces.",
+    image: "/img/jewelhero.jpg",
   },
   {
     _id: "cat_tops",
     name: "Tops",
     slug: "tops",
-    description: "Tailored silk blouses, structured knitwear & modern everyday essentials.",
-    image: "https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?auto=format&fit=crop&w=800&q=85",
-    itemCount: "15+ Styles",
+    description: "Blouses, knitwear and everyday separates.",
+    image: "/img/boatneck.jpg",
   },
 ];
   

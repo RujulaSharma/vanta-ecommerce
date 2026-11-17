@@ -1,11 +1,10 @@
-import { Headphones, RefreshCw, ShieldCheck, Truck } from "lucide-react";
+import { Headphones, ShieldCheck, Truck } from "lucide-react";
 import { tw } from "../../utils/twStyles.js";
 
 const BENEFITS = [
-  [Truck, "Free Shipping", "On all orders over ₹999"],
-  [ShieldCheck, "Secure Payment", "100% secure checkout"],
-  [RefreshCw, "Easy Returns", "30-day return policy"],
-  [Headphones, "Customer Support", "We're here to help"],
+  [Truck, "Free Shipping", "On orders of ₹2,000 or more"],
+  [ShieldCheck, "Secure Payment", "Powered by Razorpay"],
+  [Headphones, "Customer Support", "Order assistance"],
 ];
 
 const CollectionBenefits = () => (

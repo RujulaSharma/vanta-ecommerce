@@ -109,7 +109,7 @@ const OrderSummary = ({
 
         <div className="mt-5 flex items-center justify-center gap-2 text-[11px] text-[var(--vanta-muted)] border-t border-[var(--vanta-border)]/60 pt-4">
           <ShieldCheck size={14} className="text-emerald-600 dark:text-emerald-400" />
-          <span>256-Bit Encrypted Secure Checkout</span>
+          <span>Payments by Razorpay</span>
         </div>
       </div>
     </aside>

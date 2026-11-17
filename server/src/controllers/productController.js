@@ -126,23 +126,24 @@ export const getProducts = async (req, res) => {
       // SEARCH
       // =========================================================
   
-      if (search) {
+      if (typeof search === "string" && search.trim()) {
+        const term = search.trim().slice(0, 120).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
         filter.$or = [
           {
             name: {
-              $regex: search,
+              $regex: term,
               $options: "i",
             },
           },
           {
             description: {
-              $regex: search,
+              $regex: term,
               $options: "i",
             },
           },
           {
             brand: {
-              $regex: search,
+              $regex: term,
               $options: "i",
             },
           },

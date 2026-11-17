@@ -28,6 +28,19 @@ export const createOrder = async (req, res) => {
     let createdOrder;
 
     await session.withTransaction(async () => {
+      const currentOrder = await Order.findOne({
+        user: req.user._id,
+        paymentStatus: { $in: ["pending", "failed"] },
+        orderStatus: "pending",
+        inventoryReserved: true,
+        paymentExpiresAt: { $gt: new Date() },
+      }).sort({ createdAt: -1 }).session(session);
+
+      if (currentOrder) {
+        createdOrder = currentOrder;
+        return;
+      }
+
       const cart = await Cart.findOne({
         user: req.user._id,
       })
@@ -37,6 +50,9 @@ export const createOrder = async (req, res) => {
       if (!cart || cart.items.length === 0) {
         throw new Error("EMPTY_CART");
       }
+
+      // Serialize reservation attempts against the same cart without clearing it.
+      await Cart.updateOne({ _id: cart._id }, { $inc: { __v: 1 } }, { session });
 
       let subtotal = 0;
       const orderItems = [];
@@ -109,10 +125,6 @@ export const createOrder = async (req, res) => {
         }
       }
 
-    //   cart.items = [];
-
-    //   await cart.save({ session });
-
       createdOrder = order;
     });
 
@@ -173,7 +185,7 @@ export const createOrder = async (req, res) => {
 export const getPendingPaymentOrder = async (req, res) => {
   const order = await Order.findOne({
     user: req.user._id,
-    paymentStatus: "pending",
+    paymentStatus: { $in: ["pending", "failed"] },
     orderStatus: "pending",
   }).sort({ createdAt: -1 });
 

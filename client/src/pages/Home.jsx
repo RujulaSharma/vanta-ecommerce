@@ -1,18 +1,15 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { m as motion, AnimatePresence, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import {
   ArrowRight,
   ChevronLeft,
   ChevronRight,
   Heart,
   ShoppingBag,
-  Star,
   Truck,
   RotateCcw,
   ShieldCheck,
-  Sparkles,
-  Flame,
   Gem,
   Headphones,
 } from "lucide-react";
@@ -25,8 +22,7 @@ import useCartStore from "../store/cartStore";
 import useAuthStore from "../store/authStore";
 import { useAuthModal } from "../context/AuthModalContext";
 
-import heroImage from "../assets/category/hero.jpg";
-import bagsHeroImage from "../assets/category/bagshero.jpg";
+import handbagEditorial from "../assets/category/handbag-editorial.webp";
 import {
   fallbackRootCategories,
   getRootCategories,
@@ -37,72 +33,49 @@ const money = (value) => `₹${Number(value || 0).toLocaleString("en-IN")}`;
 
 const HERO_SLIDES = [
   {
-    kicker: "SHOP WITH CONFIDENCE",
-    title: "Timeless Luxury, Crafted For You.",
+    kicker: "THE HANDBAG EDIT",
+    title: "A study in structure.",
     description:
-      "Handcrafted leather handbags, structured satchels & contemporary silhouettes designed for effortless refinement.",
-    primaryCta: "Shop Collection →",
+      "Structured satchels, everyday totes and compact shoulder bags.",
+    primaryCta: "Shop handbags",
     primaryLink: "/products?category=bags",
-    secondaryCta: "Explore Handbags",
-    secondaryLink: "/category/bags",
-    image: bagsHeroImage,
-    accent: "100% Genuine Leathercraft",
+    secondaryCta: "All collections",
+    secondaryLink: "/category",
+    image: handbagEditorial,
   },
   {
-    kicker: "NEW SEASON RUNWAY '26",
-    title: "Sculpted Modern Silhouettes.",
+    kicker: "THE DRESS EDIT",
+    title: "An evening in silhouette.",
     description:
-      "Discover sculpted evening wear, flowy midi dresses, and tailored separates created with certified natural fibers.",
-    primaryCta: "Shop Dresses →",
+      "Slip dresses, fluid midis and sculptural necklines.",
+    primaryCta: "Shop dresses",
     primaryLink: "/products?category=dresses",
-    secondaryCta: "View All Tops",
+    secondaryCta: "Shop tops",
     secondaryLink: "/products?category=tops",
-    image: heroImage,
-    accent: "Silk & Tailored Weaves",
+    image: "/img/slipdress.jpg",
   },
 ];
 
 const BENEFITS = [
   {
     icon: Truck,
-    title: "Free Express Shipping",
-    description: "Complimentary delivery on orders over ₹2,000",
+    title: "Complimentary delivery",
+    description: "On orders of ₹2,000 or more",
   },
   {
     icon: RotateCcw,
-    title: "7-Day Easy Returns",
-    description: "Hassle-free doorstep pickup & instant refunds",
+    title: "Order tracking",
+    description: "Follow your order from your account",
   },
   {
     icon: ShieldCheck,
-    title: "100% Secure Payments",
-    description: "Razorpay & 256-bit encrypted card protection",
+    title: "Online payment",
+    description: "Checkout powered by Razorpay",
   },
   {
     icon: Headphones,
-    title: "24/7 Client Concierge",
-    description: "Dedicated personal styling & order support",
-  },
-];
-
-const REVIEWS = [
-  {
-    name: "Priya Sharma",
-    location: "Mumbai",
-    title: "Exceptional Leather Quality",
-    text: "The structured tote surpassed my expectations. The grain of the leather, gold hardware, and stitch precision feel like European designer labels.",
-  },
-  {
-    name: "Ananya Verma",
-    location: "Bangalore",
-    title: "Stunning Dress Fit & Fabric",
-    text: "Ordered the midi silhouette for an evening reception. Breathable silk-cotton blend that drapes elegantly without creasing. Got countless compliments!",
-  },
-  {
-    name: "Ritika Singh",
-    location: "New Delhi",
-    title: "Fast Delivery & Impeccable Box",
-    text: "Arrived in 48 hours in luxury dustbags with care instructions. Customer service is prompt and respectful. Vanta is now my go-to fashion store.",
+    title: "Client care",
+    description: "Contact us for order assistance",
   },
 ];
 
@@ -113,16 +86,11 @@ export default function Home() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [activeTrendingCategory, setActiveTrendingCategory] = useState("all");
   const [addingId, setAddingId] = useState(null);
-  const [isPaused, setIsPaused] = useState(false);
+  const reduceMotion = useReducedMotion();
+  const heroRef = useRef(null);
+  const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
+  const imageOffset = useTransform(scrollYProgress, [0, 1], ["0%", "7%"]);
 
-  // Auto-advance hero carousel with pause on hover
-  useEffect(() => {
-    if (isPaused) return undefined;
-    const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % HERO_SLIDES.length);
-    }, 6000);
-    return () => clearInterval(timer);
-  }, [isPaused]);
 
   const wishlistItems = useWishlistStore((state) => state.items);
   const toggleWishlist = useWishlistStore((state) => state.toggle);
@@ -176,50 +144,40 @@ export default function Home() {
     return roots.length ? roots.slice(0, 5) : fallbackRootCategories;
   }, [categories]);
 
-  // Filter products by category or featured status
-  const trendingProducts = useMemo(() => {
-    if (activeTrendingCategory === "all") return products.slice(0, 10);
-    return products.filter((p) => {
-      const catSlug =
-        typeof p.category === "object"
-          ? p.category?.slug
-          : normalizeCategory(p.category || "");
-      return catSlug === activeTrendingCategory;
-    });
-  }, [products, activeTrendingCategory]);
+  const productsByCollection = useMemo(() => {
+    const byId = new Map(categories.map((category) => [String(category._id), category]));
+    const collections = new Map();
 
-  const bagProducts = useMemo(() => {
-    return products.filter((p) => {
-      const catSlug =
-        typeof p.category === "object"
-          ? p.category?.slug
-          : normalizeCategory(p.category || "");
-      return catSlug === "bags" || p.name?.toLowerCase().includes("bag") || p.name?.toLowerCase().includes("tote");
-    });
-  }, [products]);
+    for (const product of products) {
+      let category = typeof product.category === "object"
+        ? product.category
+        : byId.get(String(product.category));
+      const visited = new Set();
 
-  const newArrivals = useMemo(() => {
-    return products.slice(0, 10);
-  }, [products]);
+      while (category?.parentCategory && !visited.has(category._id)) {
+        visited.add(category._id);
+        const parent = category.parentCategory;
+        category = typeof parent === "object" ? parent : byId.get(String(parent));
+      }
 
-  const footwearAndJewelry = useMemo(() => {
-    return products.filter((p) => {
-      const catSlug =
-        typeof p.category === "object"
-          ? p.category?.slug
-          : normalizeCategory(p.category || "");
-      return (
-        catSlug === "footwear" ||
-        catSlug === "jewelry" ||
-        catSlug === "jewellery" ||
-        p.name?.toLowerCase().includes("heel") ||
-        p.name?.toLowerCase().includes("necklace") ||
-        p.name?.toLowerCase().includes("shoe") ||
-        p.name?.toLowerCase().includes("ring") ||
-        p.name?.toLowerCase().includes("earring")
-      );
-    });
-  }, [products]);
+      const slug = category?.slug || normalizeCategory(category?.name || "");
+      if (!slug) continue;
+      if (!collections.has(slug)) collections.set(slug, []);
+      collections.get(slug).push(product);
+    }
+
+    return collections;
+  }, [categories, products]);
+
+  const bagProducts = productsByCollection.get("bags") || [];
+  const newArrivals = products.slice(0, 10);
+  const trendingProducts = activeTrendingCategory === "all"
+    ? newArrivals
+    : (productsByCollection.get(activeTrendingCategory) || []).slice(0, 10);
+  const footwearAndJewelry = [
+    ...(productsByCollection.get("footwear") || []),
+    ...(productsByCollection.get("jewelry") || []),
+  ];
 
   // Carousel helpers
   const nextSlide = () => {
@@ -268,20 +226,9 @@ export default function Home() {
       ? Math.round(((product.compareAtPrice - product.price) / product.compareAtPrice) * 100)
       : 0;
 
-    const ratingVal =
-      typeof product.rating === "object"
-        ? product.rating?.average || 4.8
-        : Number(product.rating || product.averageRating || 4.8);
-
-    const reviewCount =
-      product.reviews?.length ||
-      product.reviewCount ||
-      ((product.name?.length || 8) % 15) + 6;
-
     const imageSrc =
       product.images?.[0] ||
-      product.image ||
-      "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?auto=format&fit=crop&w=600&q=80";
+      product.image || null;
 
     const secondaryImage = product.images?.[1];
 
@@ -290,19 +237,19 @@ export default function Home() {
         key={product._id}
         whileHover={{ y: -5 }}
         transition={{ duration: 0.25, ease: "easeOut" }}
-        className="group relative flex flex-col rounded-2xl border border-[var(--vanta-border)] bg-[var(--vanta-surface)] p-3 transition-shadow duration-300 hover:shadow-xl hover:border-[var(--vanta-text)]/30 shrink-0 w-[240px] sm:w-[260px] md:w-[270px] xl:w-full min-w-0"
+        className="group relative flex flex-col  shrink-0 w-[240px] sm:w-[260px] md:w-[270px] xl:w-full min-w-0"
       >
         {/* IMAGE CONTAINER */}
-        <div className="relative aspect-[4/5] w-full overflow-hidden rounded-xl bg-[var(--vanta-soft)]">
+        <div className="relative aspect-[4/5] w-full overflow-hidden bg-[var(--vanta-soft)]">
           <Link to={`/products/${product.slug}`} className="block h-full w-full">
-            <img
+            {imageSrc && <img
               src={imageSrc}
               alt={product.name}
               className={`h-full w-full object-cover transition-transform duration-700 group-hover:scale-105 ${
                 secondaryImage ? "group-hover:opacity-0 transition-opacity" : ""
               }`}
               loading="lazy"
-            />
+            />}
             {secondaryImage && (
               <img
                 src={secondaryImage}
@@ -352,7 +299,7 @@ export default function Home() {
           </button>
 
           {/* QUICK ADD OVERLAY BUTTON */}
-          <div className="absolute inset-x-2.5 bottom-2.5 z-10 translate-y-3 opacity-0 transition duration-200 group-hover:translate-y-0 group-hover:opacity-100">
+          <div className="absolute inset-x-2.5 bottom-2.5 z-10 transition duration-200 pointer-fine:translate-y-3 pointer-fine:opacity-0 group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:translate-y-0 group-focus-within:opacity-100">
             <button
               type="button"
               disabled={product.stock === 0 || addingId === product._id}
@@ -373,16 +320,11 @@ export default function Home() {
                 ? product.category?.name
                 : product.category || "Vanta Collection"}
             </span>
-            {/* Stars */}
-            <div className="flex items-center gap-1 text-amber-500 shrink-0">
-              <Star size={11} fill="currentColor" />
-              <span className="font-bold text-[11px] text-[var(--vanta-text)]">{ratingVal.toFixed(1)}</span>
-              <span className="text-[10px] text-[var(--vanta-muted)]">({reviewCount})</span>
-            </div>
+
           </div>
 
           <Link to={`/products/${product.slug}`} className="mt-1.5 block">
-            <h3 className="line-clamp-1 text-xs sm:text-sm font-semibold text-[var(--vanta-text)] group-hover:text-[var(--vanta-accent)] transition">
+            <h3 className="font-serif text-lg leading-snug text-[var(--vanta-text)] group-hover:text-[var(--vanta-accent)] transition">
               {product.name}
             </h3>
           </Link>
@@ -414,13 +356,12 @@ export default function Home() {
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
+        ref={heroRef}
         className="pt-3 sm:pt-5"
       >
         <div className="mx-auto max-w-[1520px] px-4 sm:px-6 lg:px-8">
           <div
-            onMouseEnter={() => setIsPaused(true)}
-            onMouseLeave={() => setIsPaused(false)}
-            className="relative overflow-hidden rounded-3xl border border-[var(--vanta-border)] bg-gradient-to-br from-[#f8f6f0] via-[#f1eee4] to-[#e8e4d8] dark:from-[#171817] dark:via-[#131413] dark:to-[#0f100f] shadow-md group"
+            className="relative overflow-hidden border border-[var(--vanta-border)] bg-[var(--vanta-soft)] group"
           >
             <AnimatePresence mode="wait">
               <motion.div
@@ -432,14 +373,13 @@ export default function Home() {
                 className="grid grid-cols-1 lg:grid-cols-12 min-h-[460px] md:min-h-[500px] lg:min-h-[540px] xl:min-h-[580px] items-center"
               >
                 {/* TEXT COLUMN (LEFT SAFE ZONE) */}
-                <div className="lg:col-span-6 xl:col-span-7 p-6 sm:p-10 lg:p-14 xl:p-16 flex flex-col justify-center z-10">
+                <div className="lg:col-span-6 p-6 sm:p-10 lg:p-14 xl:p-16 flex flex-col justify-center z-10">
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.1, duration: 0.4 }}
-                    className="inline-flex items-center gap-2 rounded-full border border-[var(--vanta-accent)]/40 bg-[var(--vanta-accent)]/10 px-3.5 py-1 text-[10px] sm:text-xs font-bold uppercase tracking-[0.24em] text-[var(--vanta-accent)] w-fit mb-4"
+                    className="inline-flex items-center gap-2  text-[10px] sm:text-xs font-bold uppercase tracking-[0.24em] text-[var(--vanta-muted)] w-fit mb-4"
                   >
-                    <Sparkles size={12} />
                     <span>{activeSlideData.kicker}</span>
                   </motion.div>
 
@@ -447,7 +387,7 @@ export default function Home() {
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.15, duration: 0.45 }}
-                    className="font-serif text-3xl sm:text-5xl lg:text-5xl xl:text-6xl font-semibold leading-[1.08] tracking-[-0.03em] text-[var(--vanta-text)]"
+                    className="font-serif text-5xl sm:text-6xl xl:text-7xl font-normal leading-[1.08] tracking-[-0.03em] text-[var(--vanta-text)]"
                   >
                     {activeSlideData.title}
                   </motion.h1>
@@ -470,7 +410,7 @@ export default function Home() {
                   >
                     <Link
                       to={activeSlideData.primaryLink}
-                      className="inline-flex items-center gap-2.5 rounded-full bg-[var(--vanta-dark)] text-white dark:bg-white dark:text-stone-900 px-7 py-3.5 text-xs font-bold uppercase tracking-[0.14em] shadow-md transition hover:scale-[1.02] hover:opacity-95"
+                      className="inline-flex items-center gap-2.5 bg-[var(--vanta-dark)] text-white dark:bg-white dark:text-stone-900 px-7 py-3.5 text-xs font-bold uppercase tracking-[0.14em] shadow-md transition hover:scale-[1.02] hover:opacity-95"
                     >
                       <span>{activeSlideData.primaryCta}</span>
                       <ArrowRight size={15} />
@@ -478,27 +418,17 @@ export default function Home() {
 
                     <Link
                       to={activeSlideData.secondaryLink}
-                      className="inline-flex items-center gap-2 rounded-full border border-[var(--vanta-border)] bg-[var(--vanta-surface)]/80 backdrop-blur-xs px-6 py-3.5 text-xs font-bold uppercase tracking-[0.12em] text-[var(--vanta-text)] transition hover:bg-[var(--vanta-surface)] hover:border-[var(--vanta-text)]"
+                      className="inline-flex items-center gap-2 border border-[var(--vanta-border)] bg-[var(--vanta-surface)]/80 backdrop-blur-xs px-6 py-3.5 text-xs font-bold uppercase tracking-[0.12em] text-[var(--vanta-text)] transition hover:bg-[var(--vanta-surface)] hover:border-[var(--vanta-text)]"
                     >
                       <span>{activeSlideData.secondaryCta}</span>
                     </Link>
                   </motion.div>
 
-                  {/* HIGHLIGHT PERKS */}
-                  <div className="mt-7 sm:mt-8 pt-5 border-t border-[var(--vanta-border)]/70 flex flex-wrap items-center gap-6 text-[11px] text-[var(--vanta-muted)]">
-                    <span className="flex items-center gap-1.5 font-medium">
-                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                      Express Dispatch (24-48h)
-                    </span>
-                    <span className="flex items-center gap-1.5 font-medium">
-                      <span className="h-1.5 w-1.5 rounded-full bg-[var(--vanta-accent)]" />
-                      {activeSlideData.accent}
-                    </span>
-                  </div>
+
                 </div>
 
                 {/* IMAGE COLUMN (RIGHT FASHION SHOWCASE) */}
-                <div className="lg:col-span-6 xl:col-span-5 h-full min-h-[300px] sm:min-h-[380px] lg:min-h-full relative overflow-hidden flex items-center justify-center">
+                <div className="lg:col-span-6 h-full min-h-[300px] sm:min-h-[380px] lg:min-h-full relative overflow-hidden flex items-center justify-center">
                   <motion.img
                     key={`img-${currentSlide}`}
                     initial={{ scale: 1.05, opacity: 0.8 }}
@@ -506,7 +436,9 @@ export default function Home() {
                     transition={{ duration: 0.7, ease: "easeOut" }}
                     src={activeSlideData.image}
                     alt={activeSlideData.title}
-                    className="h-full w-full object-cover object-[center_25%]"
+                    fetchPriority={currentSlide === 0 ? "high" : "auto"}
+                    style={{ y: reduceMotion ? 0 : imageOffset }}
+                    className="absolute inset-x-0 -top-[7%] h-[107%] w-full object-cover object-[center_35%]"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent lg:hidden" />
                 </div>
@@ -518,7 +450,7 @@ export default function Home() {
               type="button"
               onClick={prevSlide}
               aria-label="Previous slide"
-              className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 z-20 flex h-10 w-10 items-center justify-center rounded-full border border-[var(--vanta-border)] bg-[var(--vanta-surface)]/95 backdrop-blur-sm text-[var(--vanta-text)] shadow-lg transition hover:scale-110 active:scale-95"
+              className="absolute left-3 sm:left-4 bottom-4 z-20 flex h-10 w-10 items-center justify-center rounded-full border border-[var(--vanta-border)] bg-[var(--vanta-surface)]/95 backdrop-blur-sm text-[var(--vanta-text)] shadow-lg transition hover:scale-110 active:scale-95"
             >
               <ChevronLeft size={18} strokeWidth={2.2} />
             </button>
@@ -527,7 +459,7 @@ export default function Home() {
               type="button"
               onClick={nextSlide}
               aria-label="Next slide"
-              className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 z-20 flex h-10 w-10 items-center justify-center rounded-full border border-[var(--vanta-border)] bg-[var(--vanta-surface)]/95 backdrop-blur-sm text-[var(--vanta-text)] shadow-lg transition hover:scale-110 active:scale-95"
+              className="absolute right-3 sm:right-4 bottom-4 z-20 flex h-10 w-10 items-center justify-center rounded-full border border-[var(--vanta-border)] bg-[var(--vanta-surface)]/95 backdrop-blur-sm text-[var(--vanta-text)] shadow-lg transition hover:scale-110 active:scale-95"
             >
               <ChevronRight size={18} strokeWidth={2.2} />
             </button>
@@ -540,6 +472,7 @@ export default function Home() {
                   type="button"
                   onClick={() => setCurrentSlide(idx)}
                   aria-label={`Go to slide ${idx + 1}`}
+                  aria-pressed={currentSlide === idx}
                   className={`h-2 rounded-full transition-all duration-300 ${
                     currentSlide === idx
                       ? "w-6 bg-[var(--vanta-text)]"
@@ -641,9 +574,6 @@ export default function Home() {
 
                     <div className="absolute inset-x-3.5 bottom-3.5 text-white z-10 flex items-end justify-between">
                       <div>
-                        <span className="inline-block rounded-md bg-white/20 backdrop-blur-xs px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.12em] text-white">
-                          {cat.itemCount || "Collection"}
-                        </span>
                         <h3 className="font-serif text-lg sm:text-xl font-semibold mt-1">
                           {cat.name}
                         </h3>
@@ -670,24 +600,21 @@ export default function Home() {
         transition={{ duration: 0.55 }}
       >
         <div className="mx-auto max-w-[1520px] px-4 sm:px-6 lg:px-8">
-          <div className="mb-6 flex flex-col md:flex-row md:items-end md:justify-between gap-4 border-b border-[var(--vanta-border)] pb-4">
+          <div className="mb-6 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 border-b border-[var(--vanta-border)] pb-4">
             <div>
-              <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.24em] text-rose-600 dark:text-rose-400">
-                <Flame size={13} fill="currentColor" />
-                <span>POPULAR CHOICES</span>
-              </div>
               <h2 className="mt-1 font-serif text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-[-0.03em] text-[var(--vanta-text)]">
-                Trending Now
+                Shop by collection
               </h2>
             </div>
 
             {/* CATEGORY FILTER PILLS & CAROUSEL ARROWS */}
-            <div className="flex items-center justify-between md:justify-end gap-3 w-full md:w-auto">
-              <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1">
+            <div className="flex min-w-0 items-center justify-between gap-3 lg:justify-end">
+              <div className="flex min-w-0 items-center gap-1.5 overflow-x-auto no-scrollbar py-1">
                 {["all", "bags", "dresses", "footwear", "jewelry", "tops"].map((tab) => (
                   <button
                     key={tab}
                     type="button"
+                    aria-pressed={activeTrendingCategory === tab}
                     onClick={() => setActiveTrendingCategory(tab)}
                     className={`rounded-xl px-3.5 py-1.5 text-xs font-bold uppercase tracking-[0.08em] transition shrink-0 ${
                       activeTrendingCategory === tab
@@ -757,13 +684,13 @@ export default function Home() {
             <div className="lg:col-span-4 xl:col-span-3 relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#1c1d1b] to-[#111211] p-8 text-white flex flex-col justify-between min-h-[380px]">
               <div className="relative z-10">
                 <span className="rounded-md bg-[var(--vanta-accent)] px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.2em] text-black">
-                  ICONIC LEATHER
+                  HANDBAGS
                 </span>
                 <h3 className="font-serif text-3xl sm:text-4xl font-semibold mt-4 leading-tight">
-                  The Signature Handbag Collection.
+                  Shapes to carry.
                 </h3>
                 <p className="mt-3 text-xs leading-relaxed text-stone-300">
-                  Engineered with top-grain Italian leather, protective metal studs & modular shoulder straps.
+                  Compact shoulder bags, structured totes and larger styles for travel.
                 </p>
               </div>
 
@@ -772,19 +699,19 @@ export default function Home() {
                   to="/category/bags"
                   className="inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 text-xs font-bold uppercase tracking-[0.12em] text-stone-900 transition hover:bg-stone-200"
                 >
-                  <span>Explore Handbags</span>
+                  <span>Shop handbags</span>
                   <ArrowRight size={14} />
                 </Link>
               </div>
             </div>
 
             {/* PRODUCT GRID */}
-            <div className="lg:col-span-8 xl:col-span-9 flex items-center">
+            <div className="lg:col-span-8 xl:col-span-9 flex min-w-0 items-center">
               <div
                 ref={bagsScrollRef}
                 className="flex lg:grid lg:grid-cols-3 xl:grid-cols-4 gap-4 overflow-x-auto no-scrollbar w-full pb-2"
               >
-                {(bagProducts.length > 0 ? bagProducts : products)
+                {bagProducts
                   .slice(0, 4)
                   .map((p) => renderProductCard(p))}
               </div>
@@ -923,15 +850,15 @@ export default function Home() {
 
             <div className="relative z-10 max-w-[640px]">
               <span className="rounded-full bg-white/10 px-3.5 py-1 text-[10px] font-bold uppercase tracking-[0.24em] text-[#d8b56b] backdrop-blur-xs">
-                SEASONAL HIGHLIGHT
+                THE VANTA EDIT
               </span>
 
               <h2 className="font-serif text-3xl sm:text-5xl lg:text-6xl font-semibold mt-4 leading-tight">
-                Up to <span className="text-[#d8b56b]">30% Off</span> Curated Autumn Styles.
+                The finishing pieces.
               </h2>
 
               <p className="mt-4 text-xs sm:text-sm text-stone-300 leading-relaxed">
-                Elevate your daily wardrobe with limited-edition apparel, statement heels & fine jewelry pieces crafted for effortless sophistication.
+                Sculptural jewelry, clean-lined footwear and bags with a sense of shape.
               </p>
 
               <div className="mt-8 flex flex-wrap items-center gap-4">
@@ -939,7 +866,7 @@ export default function Home() {
                   to="/products"
                   className="inline-flex items-center gap-2.5 rounded-xl bg-[#d8b56b] px-7 py-3.5 text-xs font-bold uppercase tracking-[0.14em] text-stone-950 transition hover:bg-[#c9a352] shadow-md"
                 >
-                  <span>Explore Offers</span>
+                  <span>Explore the collection</span>
                   <ArrowRight size={15} />
                 </Link>
 
@@ -947,7 +874,7 @@ export default function Home() {
                   to="/about"
                   className="inline-flex items-center gap-2 rounded-xl border border-stone-700 bg-white/5 px-6 py-3.5 text-xs font-bold uppercase tracking-[0.12em] text-white transition hover:bg-white/10"
                 >
-                  <span>Our Craft Philosophy</span>
+                  <span>About VANTA</span>
                 </Link>
               </div>
             </div>
@@ -955,65 +882,6 @@ export default function Home() {
         </div>
       </motion.section>
 
-      {/* ========================================================
-          9. CUSTOMER LOVE & TESTIMONIALS
-          ======================================================== */}
-      <motion.section
-        initial={{ opacity: 0, y: 24 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-50px" }}
-        transition={{ duration: 0.55 }}
-        className="pt-4"
-      >
-        <div className="mx-auto max-w-[1520px] px-4 sm:px-6 lg:px-8">
-          <div className="mb-8 text-center max-w-2xl mx-auto">
-            <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-[var(--vanta-accent)]">
-              VERIFIED REVIEWS
-            </p>
-            <h2 className="mt-1 font-serif text-2xl sm:text-4xl font-semibold tracking-[-0.03em] text-[var(--vanta-text)]">
-              What Our Patrons Say
-            </h2>
-            <p className="mt-2 text-xs text-[var(--vanta-muted)]">
-              Over 10,000+ satisfied fashion enthusiasts across India
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
-            {REVIEWS.map((rev, index) => (
-              <motion.div
-                key={index}
-                whileHover={{ y: -4 }}
-                transition={{ duration: 0.25 }}
-                className="flex flex-col justify-between rounded-2xl border border-[var(--vanta-border)] bg-[var(--vanta-surface)] p-6 sm:p-7 shadow-xs transition-shadow duration-200 hover:shadow-lg hover:border-[var(--vanta-text)]/30"
-              >
-                <div>
-                  <div className="flex items-center gap-1 text-amber-500">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <Star key={i} size={14} fill="currentColor" />
-                    ))}
-                  </div>
-                  <h3 className="font-serif text-base font-bold text-[var(--vanta-text)] mt-3">
-                    “{rev.title}”
-                  </h3>
-                  <p className="mt-2 text-xs leading-relaxed text-[var(--vanta-muted)]">
-                    {rev.text}
-                  </p>
-                </div>
-
-                <div className="mt-6 pt-4 border-t border-[var(--vanta-border)] flex items-center justify-between text-xs">
-                  <div>
-                    <p className="font-bold text-[var(--vanta-text)]">{rev.name}</p>
-                    <p className="text-[11px] text-[var(--vanta-muted)]">{rev.location}</p>
-                  </div>
-                  <span className="rounded-md bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
-                    Verified Buyer
-                  </span>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </motion.section>
     </main>
   );
 }

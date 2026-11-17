@@ -1,6 +1,6 @@
 import { tw } from "../utils/twStyles.js";
 import { useEffect, useMemo, useState, useCallback } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 import productService from "../services/productService";
 import categoryService from "../services/categoryService";
@@ -23,22 +23,23 @@ import ProductGrid from "../components/products/ProductGrid.jsx";
 import Pagination from "../components/products/Pagination.jsx";
 import CollectionBenefits from "../components/products/CollectionBenefits.jsx";
 
-const PRICE_MIN = 500;
+const PRICE_MIN = 0;
 const PRICE_MAX = 10000;
-const PRICE_STEP = 500;
+const PRICE_STEP = 100;
 
 const Products = ({ categorySlug = "" }) => {
   const [searchParams, setSearchParams] = useSearchParams();
 
+  const navigate = useNavigate();
   const urlCategory = searchParams.get("category") || categorySlug || "";
   const urlSearch = searchParams.get("search") || "";
 
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
 
-  const [search, setSearch] = useState(urlSearch);
-  const [selectedCategory, setSelectedCategory] = useState(urlCategory);
-  const [sort, setSort] = useState("newest");
+  const search = urlSearch;
+  const sort = searchParams.get("sort") || "newest";
+  const selectedCategory = urlCategory;
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
   const [featured, setFeatured] = useState(false);
@@ -64,10 +65,8 @@ const Products = ({ categorySlug = "" }) => {
 
   // Synchronize state when URL category or search parameters change externally
   useEffect(() => {
-    setSelectedCategory(urlCategory);
-    setSearch(urlSearch);
     setPage(1);
-  }, [urlCategory, urlSearch]);
+  }, [urlCategory, urlSearch, sort, minPrice, maxPrice, colorFilter, materialFilter, featured]);
 
   // Load categories on mount
   useEffect(() => {
@@ -85,8 +84,8 @@ const Products = ({ categorySlug = "" }) => {
         if (!cancelled) {
           setCategories(list);
         }
-      } catch (err) {
-        console.error("Failed to load categories:", err);
+      } catch {
+        // The catalog accepts category slugs even when the category index is unavailable.
       }
     };
 
@@ -187,6 +186,7 @@ const Products = ({ categorySlug = "" }) => {
 
   // Load products based on current query filters
   useEffect(() => {
+    const controller = new AbortController();
     let cancelled = false;
 
     const fetchProducts = async () => {
@@ -234,7 +234,7 @@ const Products = ({ categorySlug = "" }) => {
           ...(materialFilter && { material: materialFilter }),
         };
 
-        const res = await productService.getProducts(query);
+        const res = await productService.getProducts(query, { signal: controller.signal });
         const responseData = res.data || res;
         const fetchedProducts = responseData.products || [];
         const fetchedPagination = responseData.pagination || {
@@ -251,11 +251,10 @@ const Products = ({ categorySlug = "" }) => {
         }
       } catch (err) {
         if (!cancelled) {
-          console.error("Failed to load products:", err);
           setProducts([]);
           setError(
             err.response?.data?.message ||
-              "Unable to load products. Check that the backend server is running."
+              "The collection is temporarily unavailable."
           );
         }
       } finally {
@@ -267,6 +266,7 @@ const Products = ({ categorySlug = "" }) => {
 
     fetchProducts();
     return () => {
+      controller.abort();
       cancelled = true;
     };
   }, [
@@ -297,11 +297,11 @@ const Products = ({ categorySlug = "" }) => {
     }
 
     return {
-      title: "All Collections",
-      subtitle: "Five categories. One VANTA point of view.",
+      title: search ? `Results for “${search}”` : "The collection",
+      subtitle: search ? "" : "Handbags, clothing, footwear and jewelry.",
       image: heroImage,
     };
-  }, [activeCategory]);
+  }, [activeCategory, search]);
 
   const hasFilters = Boolean(
     search ||
@@ -315,12 +315,6 @@ const Products = ({ categorySlug = "" }) => {
 
   const chooseCategory = useCallback(
     (categoryOrSlug) => {
-      if (!categoryOrSlug) {
-        setSelectedCategory("");
-        setPage(1);
-        setSearchParams({});
-        return;
-      }
 
       const categoryObj =
         typeof categoryOrSlug === "object"
@@ -345,25 +339,24 @@ const Products = ({ categorySlug = "" }) => {
         ? normalizeCategoryKey(categoryObj.slug || categoryObj.name)
         : normalizeCategoryKey(categoryOrSlug);
 
-      setSelectedCategory(key);
+      const next = new URLSearchParams(searchParams);
+      if (key) next.set("category", key);
+      else next.delete("category");
       setPage(1);
-      setSearchParams(key ? { category: key } : {});
+      navigate({ pathname: "/products", search: next.toString() });
     },
-    [categories, setSearchParams]
+    [categories, navigate, searchParams]
   );
 
   const resetFilters = useCallback(() => {
-    setSearch("");
-    setSelectedCategory("");
-    setSort("newest");
     setMinPrice("");
     setMaxPrice("");
     setFeatured(false);
     setColorFilter("");
     setMaterialFilter("");
     setPage(1);
-    setSearchParams({});
-  }, [setSearchParams]);
+    navigate("/products");
+  }, [navigate]);
 
   return (
     <main className={tw("vanta-collection-page")}>
@@ -371,7 +364,6 @@ const Products = ({ categorySlug = "" }) => {
         <CollectionHero hero={hero} parentCategory={parentCategory} />
 
         <CategoryPills
-          activeCategory={activeCategory}
           siblingCategories={siblingCategories}
           parentCategory={parentCategory}
           selectedCategory={selectedCategory}
@@ -384,8 +376,13 @@ const Products = ({ categorySlug = "" }) => {
           )}
         >
           <CollectionToolbar
+            count={loading || error ? null : pagination.totalProducts}
             sort={sort}
-            setSort={setSort}
+            setSort={(value) => {
+              const next = new URLSearchParams(searchParams);
+              next.set("sort", value);
+              setSearchParams(next);
+            }}
             setPage={setPage}
             hasFilters={hasFilters}
             setShowFilters={setShowFilters}

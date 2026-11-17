@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { CheckCircle2, Package, ArrowRight, ShoppingBag } from "lucide-react";
 import confetti from "canvas-confetti";
-import { motion } from "framer-motion";
+import { m as motion } from "framer-motion";
 
 const OrderSuccess = () => {
   const { orderId } = useParams();

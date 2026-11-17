@@ -2,8 +2,8 @@ import { Link } from "react-router-dom";
 import { tw } from "../../utils/twStyles.js";
 
 const CollectionHero = ({ hero, parentCategory }) => (
-  <section className={tw("vanta-collection-hero !h-[235px] max-[640px]:!h-[220px]")}>
-    <img src={hero.image} alt={hero.title} />
+  <section className={tw("vanta-catalog-banner vanta-collection-hero !h-[235px] max-[640px]:!h-[220px]")}>
+    <img src={hero.image} alt="" />
 
     <div className={tw("vanta-collection-hero-overlay")} />
 
@@ -27,9 +27,8 @@ const CollectionHero = ({ hero, parentCategory }) => (
           <strong className="font-semibold text-white">{hero.title}</strong>
         </div>
 
-        <p className={tw("vanta-eyebrow")}>VANTA COLLECTION</p>
-        <h1>{hero.title}</h1>
-        <p>{hero.subtitle}</p>
+        <h1 className="font-serif text-4xl font-normal tracking-tight sm:text-6xl">{hero.title}</h1>
+        {hero.subtitle && <p className="mt-3 text-sm text-white/85">{hero.subtitle}</p>}
       </div>
     </div>
   </section>

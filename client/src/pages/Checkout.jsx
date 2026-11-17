@@ -19,7 +19,10 @@ const Checkout = () => {
     cart,
     addresses,
     selectedAddressId,
+    pendingOrder,
     loading,
+    loadError,
+    loadCheckout,
     savingAddress,
     placingOrder,
     showAddressForm,
@@ -54,6 +57,16 @@ const Checkout = () => {
             <div className="h-96 animate-pulse rounded-2xl bg-[var(--vanta-soft)]" />
           </div>
         </div>
+      </main>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <main className="mx-auto max-w-2xl px-5 py-24 text-center">
+        <h1 className="font-serif text-4xl">Checkout is unavailable</h1>
+        <p role="alert" className="mt-4 text-sm text-[var(--vanta-muted)]">{loadError}</p>
+        <button type="button" onClick={loadCheckout} className="mt-6 border-b pb-2 text-sm font-semibold">Try again</button>
       </main>
     );
   }
@@ -117,15 +130,29 @@ const Checkout = () => {
           <div className="space-y-8">
             <ContactSection user={user} />
 
-            <AddressSection
-              addresses={addresses}
-              selectedAddressId={selectedAddressId}
-              onSelect={selectAddress}
-              onDelete={deleteAddress}
-              onAdd={openAddressForm}
-            />
+            {pendingOrder ? (
+              <section className="border border-[var(--vanta-border)] p-6">
+                <h2 className="font-serif text-2xl">Resume payment</h2>
+                <p className="mt-2 text-sm text-[var(--vanta-muted)]">
+                  This order will be delivered to the address saved when you placed it.
+                </p>
+                <p className="mt-4 text-sm">
+                  {pendingOrder.shippingAddress?.name}<br />
+                  {pendingOrder.shippingAddress?.addressLine1}<br />
+                  {pendingOrder.shippingAddress?.city}, {pendingOrder.shippingAddress?.postalCode}
+                </p>
+              </section>
+            ) : (
+              <AddressSection
+                addresses={addresses}
+                selectedAddressId={selectedAddressId}
+                onSelect={selectAddress}
+                onDelete={deleteAddress}
+                onAdd={openAddressForm}
+              />
+            )}
 
-            {showAddressForm && (
+            {!pendingOrder && showAddressForm && (
               <AddressForm
                 onSubmit={createAddress}
                 onCancel={closeAddressForm}
@@ -144,7 +171,7 @@ const Checkout = () => {
             total={total}
             onPlaceOrder={placeOrder}
             placingOrder={placingOrder}
-            disabled={!selectedAddressId}
+            disabled={!pendingOrder && !selectedAddressId}
           />
         </div>
       </div>

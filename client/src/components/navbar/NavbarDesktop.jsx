@@ -3,9 +3,7 @@ import {
   ChevronDown,
   Search,
   X,
-  Sparkles,
   Menu,
-  Flame,
   Mic,
 } from "lucide-react";
 import NavbarProfile from "./NavbarProfile";
@@ -43,7 +41,7 @@ const NavbarDesktop = ({
   };
 
   return (
-    <div className="hidden lg:flex flex-col w-full">
+    <div className="hidden min-[901px]:flex flex-col w-full">
       {/* ========================================================
           TIER 1: MAIN HEADER (LOGO | EXPANSIVE SEARCH | ACTIONS)
           ======================================================== */}
@@ -57,9 +55,6 @@ const NavbarDesktop = ({
           <span className="font-serif text-3xl xl:text-4xl font-semibold tracking-[0.24em] leading-none transition group-hover:opacity-90">
             VANTA
           </span>
-          <span className="text-[7.5px] font-bold uppercase tracking-[0.38em] text-[var(--vanta-muted)] mt-1">
-            Luxury & Contemporary
-          </span>
         </Link>
 
         {/* PROMINENT CENTRAL SEARCH BAR */}
@@ -70,6 +65,7 @@ const NavbarDesktop = ({
           {/* Category Dropdown Prefix */}
           <div className="relative shrink-0 border-r border-[var(--vanta-border)] hidden xl:flex items-center pl-4 pr-3 text-xs text-[var(--vanta-muted)]">
             <select
+              aria-label="Search category"
               value={selectedCategory || ""}
               onChange={(e) => setSelectedCategory(e.target.value)}
               className="appearance-none bg-transparent pr-4 py-1 text-xs font-semibold text-[var(--vanta-text)] outline-none cursor-pointer"
@@ -94,7 +90,7 @@ const NavbarDesktop = ({
             type="search"
             value={navSearch}
             onChange={(event) => setNavSearch(event.target.value)}
-            placeholder="Search luxury handbags, dresses, footwear, jewelry..."
+            placeholder="Search handbags, clothing, footwear and jewelry"
             aria-label="Search products"
             className="w-full min-w-0 bg-transparent px-3 text-xs xl:text-sm text-[var(--vanta-text)] outline-none placeholder:text-[var(--vanta-muted)]/70"
           />
@@ -294,19 +290,10 @@ const NavbarDesktop = ({
             to="/products?sort=newest"
             className="flex items-center gap-1 rounded-lg px-2.5 xl:px-3 py-1.5 uppercase tracking-[0.06em] text-xs font-semibold text-[var(--vanta-muted)] hover:text-[var(--vanta-text)] transition"
           >
-            <Sparkles size={13} className="text-[var(--vanta-accent)]" />
             <span>New Arrivals</span>
           </NavLink>
         </div>
 
-        {/* Right side: Deals Zone Pill Button */}
-        <Link
-          to="/products"
-          className="flex items-center gap-1.5 rounded-full bg-rose-50 border border-rose-200/80 dark:bg-rose-950/40 dark:border-rose-900 px-3.5 py-1.5 text-xs font-bold uppercase tracking-[0.08em] text-rose-700 dark:text-rose-400 transition hover:bg-rose-100 dark:hover:bg-rose-900/60 shadow-2xs"
-        >
-          <Flame size={13} fill="currentColor" />
-          <span>Deals Zone</span>
-        </Link>
       </div>
     </div>
   );

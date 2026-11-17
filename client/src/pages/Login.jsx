@@ -1,12 +1,13 @@
 import { tw } from "../utils/twStyles.js";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, LockKeyhole, Mail } from "lucide-react";
 import useAuthStore from "../store/authStore";
 import { useAuthModal } from "../context/AuthModalContext";
 
 const Login = () => {
   const navigate = useNavigate();
+  const { pathname, search, hash, state } = useLocation();
   const login = useAuthStore((state) => state.login);
   const { closeAuth, switchAuth } = useAuthModal();
 
@@ -15,7 +16,6 @@ const Login = () => {
     password: "",
   });
   const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -37,7 +37,7 @@ const Login = () => {
       const user = data.data?.user;
 
       closeAuth();
-      navigate(user?.role === "admin" ? "/admin" : "/", { replace: true });
+      navigate(state?.from || (user?.role === "admin" ? "/admin" : { pathname, search, hash }), { replace: true });
     } catch (requestError) {
       setError(
         requestError.response?.data?.message ||
@@ -51,10 +51,7 @@ const Login = () => {
   return (
     <div className={tw("vanta-auth-content")}>
       <div className={tw("vanta-auth-heading")}>
-        <p className={tw("vanta-auth-kicker")}>VANTA BAGS</p>
-        <h2 id="vanta-auth-title">Login</h2>
-        <p>Welcome back!</p>
-        <small>Please login to your account</small>
+        <h2 id="vanta-auth-title">Sign in</h2>
       </div>
 
       {error && <div className={tw("vanta-auth-error")}>{error}</div>}
@@ -100,36 +97,12 @@ const Login = () => {
           </div>
         </label>
 
-        <div className={tw("vanta-auth-options")}>
-          <label className={tw("vanta-auth-remember")}>
-            <input
-              type="checkbox"
-              checked={rememberMe}
-              onChange={(event) => setRememberMe(event.target.checked)}
-            />
-            <span>Remember me</span>
-          </label>
-          <button
-            type="button"
-            className={tw("vanta-auth-link-button")}
-            onClick={() => setError("Password reset is not configured yet.")}
-          >
-            Forgot password?
-          </button>
-        </div>
-
         <button className={tw("vanta-auth-submit")} type="submit" disabled={loading}>
-          {loading ? "Logging in..." : "Login"}
+          {loading ? "Signing in…" : "Sign in"}
         </button>
       </form>
 
-      <div className={tw("vanta-auth-divider")}><span>or continue with</span></div>
 
-      <div className={tw("vanta-auth-socials")} aria-hidden="true">
-        <span>G</span>
-        <span></span>
-        <span>◎</span>
-      </div>
 
       <p className={tw("vanta-auth-switch")}>
         Don't have an account?{" "}

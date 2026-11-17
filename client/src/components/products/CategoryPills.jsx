@@ -1,15 +1,18 @@
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { tw } from "../../utils/twStyles.js";
 import { getCategoryId, getCategoryKey, normalizeCategoryKey } from "../../utils/productHelpers.js";
 
 const CategoryPills = ({
-  activeCategory,
   siblingCategories,
   parentCategory,
   selectedCategory,
   chooseCategory,
 }) => {
-  if (!activeCategory || siblingCategories.length === 0) return null;
+  const [params] = useSearchParams();
+  const next = new URLSearchParams(params);
+  next.delete("category");
+
+  if (siblingCategories.length === 0) return null;
 
   return (
     <div className={tw("vanta-category-pills")}>
@@ -36,7 +39,8 @@ const CategoryPills = ({
         return (
           <Link
             key={getCategoryId(category) || key}
-            to={`/category/${key}`}
+            to={{ pathname: `/category/${key}`, search: next.toString() }}
+            aria-current={active ? "page" : undefined}
             className={tw(`vanta-category-pill ${active ? "active" : ""}`)}
           >
             {category.name}

@@ -1,3 +1,4 @@
+import { m as motion } from "framer-motion";
 import { tw } from "../utils/twStyles.js";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -8,7 +9,6 @@ import {
   Heart,
   Minus,
   Plus,
-  RotateCcw,
   ShieldCheck,
   ShoppingBag,
   Star,
@@ -212,14 +212,7 @@ const ProductDetails = () => {
   const rating = reviewStats.average || Number(product.rating || 0) || 0;
   const ratingCount = reviewStats.count || Number(product.reviewCount || 0) || 0;
 
-  const colorName = product.color || "Black";
-  const colorSwatches = [
-    "#111111",
-    "#19334a",
-    "#ddd7c7",
-    "#5b4c35",
-    "#2d2d2b",
-  ];
+  const colorName = product.color || "Not specified";
 
   const changeQuantity = (delta) => {
     setQuantity((current) => Math.max(1, Math.min(current + delta, stock)));
@@ -304,6 +297,7 @@ const ProductDetails = () => {
                 type="button"
                 onClick={() => setSelectedImage(image)}
                 className={tw(`vanta-product-thumb ${selectedImage === image ? "active" : ""}`)}
+                aria-pressed={selectedImage === image}
                 aria-label={`View product image ${index + 1}`}
               >
                 <img src={image} alt={`${product.name} ${index + 1}`} />
@@ -313,7 +307,7 @@ const ProductDetails = () => {
 
           <div className={tw("vanta-product-main-image")}>
             {selectedImage ? (
-              <img src={selectedImage} alt={product.name} />
+              <motion.img key={selectedImage} src={selectedImage} alt={product.name} className="h-full w-full object-cover" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.35 }} />
             ) : (
               <span>VANTA</span>
             )}
@@ -331,20 +325,21 @@ const ProductDetails = () => {
               onClick={toggleSaved}
               className={tw(`vanta-product-wishlist ${isWishlisted ? "saved" : ""}`)}
               aria-label="Toggle wishlist"
+              aria-pressed={isWishlisted}
             >
               <Heart size={19} fill={isWishlisted ? "currentColor" : "none"} />
             </button>
           </div>
 
-          <div className={tw("vanta-product-rating")}>
+          {ratingCount > 0 && <div className={tw("vanta-product-rating")}>
             <span className={tw("vanta-stars")}>
               {[1, 2, 3, 4, 5].map((item) => (
                 <Star key={item} size={14} fill={item <= Math.round(rating) ? "currentColor" : "none"} />
               ))}
             </span>
-            <span>{rating ? rating.toFixed(1) : "5.0"}</span>
-            <span className={tw("vanta-rating-muted")}>({ratingCount || 0} reviews)</span>
-          </div>
+            <span>{rating.toFixed(1)}</span>
+            <span className={tw("vanta-rating-muted")}>({ratingCount} reviews)</span>
+          </div>}
 
           <div className={tw("vanta-product-price-row")}>
             <strong>{formatPrice(currentPrice)}</strong>
@@ -352,24 +347,9 @@ const ProductDetails = () => {
           </div>
           <p className={tw("vanta-tax-note")}>Inclusive of all taxes</p>
 
-          <p className={tw("vanta-product-short-description")}>
-            {product.description || "A refined VANTA piece designed for everyday movement, with thoughtful storage and a premium finish."}
-          </p>
+          {product.description && <p className="mt-4 text-sm leading-relaxed text-[var(--vanta-muted)]">{product.description}</p>}
 
-          <div className={tw("vanta-product-option")}>
-            <div className={tw("vanta-option-label")}><span>Color:</span> <b>{colorName}</b></div>
-            <div className={tw("vanta-color-swatches")}>
-              {colorSwatches.map((color, index) => (
-                <button
-                  key={color}
-                  type="button"
-                  className={tw(`vanta-color-swatch ${index === 0 ? "active" : ""}`)}
-                  style={{ background: color }}
-                  aria-label={`Color option ${index + 1}`}
-                />
-              ))}
-            </div>
-          </div>
+          {product.color && <p className="mt-5 text-sm">Color <strong className="capitalize">{product.color}</strong></p>}
 
           <div className={tw("vanta-stock-row")}>
             {isSoldOut ? (
@@ -385,11 +365,11 @@ const ProductDetails = () => {
             <>
               <div className={tw("vanta-product-buy-row")}>
                 <div className={tw("vanta-quantity")}>
-                  <button type="button" onClick={() => changeQuantity(-1)} disabled={quantity <= 1 || addingToCart || buyingNow}>
+                  <button type="button" aria-label="Decrease quantity" onClick={() => changeQuantity(-1)} disabled={quantity <= 1 || addingToCart || buyingNow}>
                     <Minus size={14} />
                   </button>
                   <span>{quantity}</span>
-                  <button type="button" onClick={() => changeQuantity(1)} disabled={quantity >= stock || addingToCart || buyingNow}>
+                  <button type="button" aria-label="Increase quantity" onClick={() => changeQuantity(1)} disabled={quantity >= stock || addingToCart || buyingNow}>
                     <Plus size={14} />
                   </button>
                 </div>
@@ -397,7 +377,7 @@ const ProductDetails = () => {
 
               <button type="button" onClick={handleAddToCart} disabled={addingToCart || buyingNow} className={tw("vanta-product-primary-btn")}>
                 <ShoppingBag size={17} />
-                {addingToCart ? "Adding to cart..." : "Add to Cart"}
+                {addingToCart ? "Adding to bag…" : "Add to bag"}
               </button>
 
               <button type="button" onClick={handleBuyNow} disabled={addingToCart || buyingNow} className={tw("vanta-product-secondary-btn")}>
@@ -409,9 +389,8 @@ const ProductDetails = () => {
           {isSoldOut && <button disabled className={tw("vanta-product-secondary-btn disabled")}>Sold Out</button>}
 
           <div className={tw("vanta-product-benefits")}>
-            <div><Truck size={22} /><span><b>Free Shipping</b><small>On orders above ₹999</small></span></div>
-            <div><RotateCcw size={21} /><span><b>7 Days Return</b><small>Hassle-free returns</small></span></div>
-            <div><ShieldCheck size={22} /><span><b>Secure Payment</b><small>100% secure checkout</small></span></div>
+            <div><Truck size={22} /><span><b>Free Shipping</b><small>On orders of ₹2,000 or more</small></span></div>
+            <div><ShieldCheck size={22} /><span><b>Secure Payment</b><small>Powered by Razorpay</small></span></div>
           </div>
         </aside>
       </section>
@@ -420,7 +399,7 @@ const ProductDetails = () => {
         <div className={tw("vanta-product-tabs")}>
           {["description", "specifications", "shipping"].map((tab) => (
             <button key={tab} type="button" className={activeTab === tab ? "active" : ""} onClick={() => setActiveTab(tab)}>
-              {tab === "description" ? "Description" : tab === "specifications" ? "Specifications" : "Shipping & Returns"}
+              {tab === "description" ? "Description" : tab === "specifications" ? "Specifications" : "Delivery"}
             </button>
           ))}
         </div>
@@ -428,21 +407,15 @@ const ProductDetails = () => {
         <div className={tw("vanta-product-tab-content")}>
           {activeTab === "description" && (
             <div>
-              <h2>Made for modern movement.</h2>
-              <p>{product.description || "The VANTA collection balances clean architecture with practical details, giving your everyday carry a polished finish."}</p>
-              <ul>
-                <li>Designed for everyday city use</li>
-                <li>Thoughtful compartments for daily essentials</li>
-                <li>Comfort-focused construction</li>
-                <li>Premium VANTA finish</li>
-              </ul>
+              <h2 className="font-serif text-2xl">About this piece</h2>
+              <p className="mt-2">{product.description || "Description unavailable."}</p>
             </div>
           )}
 
           {activeTab === "specifications" && (
             <div className={tw("vanta-spec-grid")}>
               <div><span>Brand</span><b>{product.brand || "Vanta Bags"}</b></div>
-              <div><span>Material</span><b>{product.material || "Premium construction"}</b></div>
+              <div><span>Material</span><b>{product.material || "Not specified"}</b></div>
               <div><span>Color</span><b>{colorName}</b></div>
               <div><span>SKU</span><b>{product.sku || "N/A"}</b></div>
               <div><span>Availability</span><b>{stock > 0 ? "In stock" : "Sold out"}</b></div>
@@ -451,9 +424,9 @@ const ProductDetails = () => {
 
           {activeTab === "shipping" && (
             <div className={tw("vanta-shipping-copy")}>
-              <p><b>Free shipping</b> is available on orders above ₹999.</p>
-              <p>Orders are carefully packed before dispatch. Eligible returns can be requested within 7 days according to the store's return policy.</p>
-              <p>Payments are processed securely through the checkout provider.</p>
+              <p><b>Complimentary delivery</b> on orders of ₹2,000 or more.</p>
+              <p>Delivery is ₹100 on orders below ₹2,000.</p>
+              <p>For help with an order, email <a className="underline" href="mailto:support@vanta.com">client care</a>.</p>
             </div>
           )}
         </div>

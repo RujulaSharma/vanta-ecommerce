@@ -35,6 +35,7 @@ const Navbar = () => {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const logout = useAuthStore((state) => state.logout);
   const fetchCart = useCartStore((state) => state.fetchCart);
+  const setCart = useCartStore((state) => state.setCart);
   const { openAuth } = useAuthModal();
 
   useEffect(() => {
@@ -45,7 +46,8 @@ const Navbar = () => {
 
   useEffect(() => {
     if (isAuthenticated) fetchCart().catch(() => {});
-  }, [isAuthenticated, fetchCart]);
+    else setCart(null);
+  }, [isAuthenticated, fetchCart, setCart]);
 
   useEffect(() => {
     let cancelled = false;
@@ -81,7 +83,12 @@ const Navbar = () => {
     };
 
     const handleEscape = (event) => {
-      if (event.key === "Escape") setProfileOpen(false);
+      if (event.key === "Escape") {
+        setProfileOpen(false);
+        setMobileMenuOpen(false);
+        setMobileSearchOpen(false);
+        setCollectionsOpen(false);
+      }
     };
 
     document.addEventListener("mousedown", handleOutsideClick);
@@ -96,7 +103,9 @@ const Navbar = () => {
   useEffect(() => {
     setCollectionsOpen(false);
     setMobileMenuOpen(false);
-  }, [location.pathname]);
+      setMobileSearchOpen(false);
+    setProfileOpen(false);
+  }, [location.key]);
 
   useEffect(() => {
     if (mobileMenuOpen) {
@@ -136,22 +145,9 @@ const Navbar = () => {
         isHome ? "shadow-xs" : ""
       }`}
     >
-      {/* 1. TOP UTILITY ANNOUNCEMENT BAR */}
-      <div className="border-b border-[var(--vanta-border)]/60 bg-[var(--vanta-soft)]/60 text-[11px] text-[var(--vanta-muted)]">
-        <div className="mx-auto flex h-9 max-w-[1520px] items-center justify-between px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-2">
-            <span className="font-semibold text-[var(--vanta-accent)]">FREE SHIPPING</span>
-            <span>•</span>
-            <span className="truncate">Express Delivery on orders over ₹2,000 | 7-Day Effortless Returns</span>
-          </div>
-
-          <div className="hidden md:flex items-center gap-4 text-[11px]">
-            <span className="text-[var(--vanta-text)] font-medium">✨ Premium Handcrafted Fashion</span>
-            <span>•</span>
-            <span className="hover:text-[var(--vanta-text)] transition cursor-pointer">Support: help@vanta.com</span>
-          </div>
-        </div>
-      </div>
+      <p className="bg-[var(--vanta-soft)] px-3 py-2 text-center text-[11px] tracking-wide text-[var(--vanta-muted)]">
+        Complimentary delivery on orders of ₹2,000 or more
+      </p>
 
       {/* 2. MAIN NAVBAR CONTAINER */}
       <div className="mx-auto max-w-[1520px] px-4 sm:px-6 lg:px-8">

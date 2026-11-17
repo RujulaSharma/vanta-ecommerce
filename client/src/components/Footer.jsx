@@ -1,24 +1,13 @@
-import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowUpRight } from "lucide-react";
-import toast from "react-hot-toast";
 
 const Footer = () => {
-  const [newsletterEmail, setNewsletterEmail] = useState("");
-
-  const handleSubscribe = (e) => {
-    e.preventDefault();
-    if (!newsletterEmail) return;
-    toast.success("Welcome to Vanta Privé. You're on the exclusive guest list.");
-    setNewsletterEmail("");
-  };
-
   return (
     <footer className="border-t border-[var(--vanta-border)] bg-[var(--vanta-surface)] text-[var(--vanta-text)] transition-colors duration-200">
       <div className="mx-auto max-w-[1520px] px-4 sm:px-6 lg:px-8 py-16 lg:py-20">
         <div className="grid gap-12 lg:grid-cols-12">
           {/* Brand & Mission Column */}
-          <div className="lg:col-span-4">
+          <div className="lg:col-span-6">
             <Link
               to="/"
               className="font-serif text-3xl font-semibold tracking-[0.22em] text-[var(--vanta-text)]"
@@ -27,24 +16,14 @@ const Footer = () => {
             </Link>
 
             <p className="mt-4 max-w-sm text-xs sm:text-sm leading-relaxed text-[var(--vanta-muted)]">
-              Curated luxury fashion, artisan handbags, architectural footwear, and contemporary apparel designed for modern sophistication.
+              An independent edit of handbags, clothing, footwear and jewelry.
             </p>
 
-            <div className="mt-6 flex flex-wrap gap-2.5">
-              {["Instagram", "Pinterest", "Facebook", "LinkedIn"].map((platform) => (
-                <a
-                  key={platform}
-                  href="#"
-                  className="rounded-lg border border-[var(--vanta-border)] bg-[var(--vanta-soft)] px-3 py-1.5 text-[11px] font-semibold text-[var(--vanta-text)] transition hover:border-[var(--vanta-text)]"
-                >
-                  {platform}
-                </a>
-              ))}
-            </div>
+
           </div>
 
           {/* Quick Shop Links */}
-          <div className="lg:col-span-2 sm:col-span-4">
+          <div className="lg:col-span-3 sm:col-span-4">
             <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] text-[var(--vanta-muted)]">
               COLLECTIONS
             </h3>
@@ -71,7 +50,7 @@ const Footer = () => {
           </div>
 
           {/* Customer Care & Help */}
-          <div className="lg:col-span-2 sm:col-span-4">
+          <div className="lg:col-span-3 sm:col-span-4">
             <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] text-[var(--vanta-muted)]">
               CUSTOMER CARE
             </h3>
@@ -95,47 +74,14 @@ const Footer = () => {
             </nav>
           </div>
 
-          {/* Newsletter & Club */}
-          <div className="lg:col-span-4 sm:col-span-4">
-            <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] text-[var(--vanta-muted)]">
-              THE VANTA PRIVÉ
-            </h3>
-            <p className="mt-4 text-xs leading-relaxed text-[var(--vanta-muted)]">
-              Subscribe to receive exclusive seasonal previews, runway invitations & private member discounts.
-            </p>
-            <form
-              onSubmit={handleSubscribe}
-              className="mt-4 flex rounded-xl border border-[var(--vanta-border)] bg-[var(--vanta-soft)] p-1 focus-within:border-[var(--vanta-text)]"
-            >
-              <input
-                type="email"
-                required
-                value={newsletterEmail}
-                onChange={(e) => setNewsletterEmail(e.target.value)}
-                placeholder="Enter your email address"
-                className="w-full bg-transparent px-3 text-xs text-[var(--vanta-text)] outline-none placeholder:text-[var(--vanta-muted)]"
-              />
-              <button
-                type="submit"
-                className="rounded-lg bg-[var(--vanta-text)] px-4 py-2 text-xs font-bold uppercase tracking-[0.1em] text-[var(--vanta-bg)] transition hover:opacity-90 shrink-0"
-              >
-                Join
-              </button>
-            </form>
-          </div>
+
         </div>
 
         {/* Bottom Bar */}
         <div className="mt-16 flex flex-col gap-4 border-t border-[var(--vanta-border)] pt-8 text-[11px] text-[var(--vanta-muted)] sm:flex-row sm:items-center sm:justify-between">
-          <p>© {new Date().getFullYear()} VANTA ECOMM INC. ALL RIGHTS RESERVED.</p>
+          <p>© {new Date().getFullYear()} VANTA</p>
 
-          <div className="flex items-center gap-6">
-            <span className="hover:text-[var(--vanta-text)] transition cursor-pointer">Privacy Policy</span>
-            <span>•</span>
-            <span className="hover:text-[var(--vanta-text)] transition cursor-pointer">Terms of Service</span>
-            <span>•</span>
-            <span className="hover:text-[var(--vanta-text)] transition cursor-pointer">Compliance & Security</span>
-          </div>
+
         </div>
       </div>
     </footer>

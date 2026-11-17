@@ -7,6 +7,7 @@ import {
   ShoppingBag,
 } from "lucide-react";
 import cartService from "../services/cartService";
+import useAuthStore from "../store/authStore";
 import useCartStore from "../store/cartStore";
 import toast from "react-hot-toast";
 
@@ -17,6 +18,9 @@ const formatPrice = (price) => {
 };
 
 const Cart = () => {
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const authLoading = useAuthStore((state) => state.loading);
+  const [loadError, setLoadError] = useState("");
   const [cart, setCart] = useState(null);
   const [loading, setLoading] = useState(true);
   const [updatingId, setUpdatingId] =
@@ -30,6 +34,7 @@ const Cart = () => {
   const loadCart = useCallback(async () => {
     try {
       setLoading(true);
+      setLoadError("");
 
       const data = await cartService.getCart();
 
@@ -37,19 +42,16 @@ const Cart = () => {
       setCart(loadedCart);
       setGlobalCart(loadedCart);
     } catch (error) {
-      if (error.response?.status === 401) {
-        toast.error("Please login to view your cart");
-      } else {
-        toast.error(error.response?.data?.message || "Unable to load cart");
-      }
+      setLoadError(error.response?.data?.message || "Your bag could not be loaded.");
     } finally {
       setLoading(false);
     }
   }, [setGlobalCart]);
 
   useEffect(() => {
-    loadCart();
-  }, [loadCart]);
+    if (isAuthenticated) loadCart();
+    else setCart(null);
+  }, [isAuthenticated, loadCart]);
 
   const updateQuantity = async (
     productId,
@@ -131,7 +133,7 @@ const Cart = () => {
     }
   };
 
-  if (loading) {
+  if (authLoading || (isAuthenticated && loading)) {
     return (
       <main className="mx-auto max-w-6xl px-5 py-20 lg:px-8">
         <div className="animate-pulse">
@@ -145,7 +147,7 @@ const Cart = () => {
     );
   }
 
-  if (!cart || !cart.items?.length) {
+  if (!isAuthenticated || loadError || !cart?.items?.length) {
     return (
       <main className="mx-auto max-w-6xl px-5 py-20 text-center lg:px-8">
         <ShoppingBag
@@ -155,23 +157,30 @@ const Cart = () => {
         />
 
         <p className="mt-6 text-xs font-bold tracking-[0.25em]">
-          VANTA BAGS
+          VANTA
         </p>
 
         <h1 className="mt-5 font-serif text-5xl">
-          Your Cart
+          Your bag
         </h1>
 
-        <p className="mt-4 text-stone-500">
-          Your cart is currently empty.
+        <p className="mt-4 text-[var(--vanta-muted)]">
+          {!isAuthenticated ? "Sign in to view your bag." : loadError || "Your bag is empty."}
         </p>
 
-        <Link
-          to="/products"
-          className="mt-8 inline-flex bg-stone-950 px-8 py-4 text-sm font-semibold text-white transition hover:bg-stone-800"
-        >
-          Continue Shopping
-        </Link>
+        {isAuthenticated && loadError ? (
+          <button type="button" onClick={loadCart} className="mt-8 border-b pb-2 text-sm font-semibold">
+            Try again
+          </button>
+        ) : (
+          <Link
+            to={isAuthenticated ? "/products" : "/login"}
+            state={isAuthenticated ? undefined : { from: { pathname: "/cart" } }}
+            className="mt-8 inline-flex bg-[var(--vanta-text)] px-8 py-4 text-sm font-semibold text-[var(--vanta-bg)] transition hover:opacity-85"
+          >
+            {isAuthenticated ? "Continue shopping" : "Sign in"}
+          </Link>
+        )}
       </main>
     );
   }
@@ -197,17 +206,17 @@ const Cart = () => {
 
       {/* Header */}
 
-      <div className="flex flex-col gap-5 border-b border-stone-200 pb-8 sm:flex-row sm:items-end sm:justify-between">
+      <div className="flex flex-col gap-5 border-b border-[var(--vanta-border)] pb-8 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="text-xs font-bold tracking-[0.25em]">
-            VANTA BAGS
+            VANTA
           </p>
 
           <h1 className="mt-4 font-serif text-5xl">
-            Your Cart
+            Your bag
           </h1>
 
-          <p className="mt-3 text-sm text-stone-500">
+          <p className="mt-3 text-sm text-[var(--vanta-muted)]">
             {cart.items.length}{" "}
             {cart.items.length === 1
               ? "item"
@@ -219,8 +228,8 @@ const Cart = () => {
         <button
           type="button"
           onClick={clearCart}
-          disabled={clearing}
-          className="self-start text-sm text-stone-500 underline underline-offset-4 hover:text-stone-950 disabled:cursor-not-allowed disabled:opacity-40 sm:self-auto"
+          disabled={clearing || Boolean(updatingId)}
+          className="self-start text-sm text-[var(--vanta-muted)] underline underline-offset-4 hover:text-[var(--vanta-text)] disabled:cursor-not-allowed disabled:opacity-40 sm:self-auto"
         >
           {clearing
             ? "Clearing..."
@@ -228,11 +237,11 @@ const Cart = () => {
         </button>
       </div>
 
-      <div className="mt-10 grid gap-12 lg:grid-cols-[1fr_360px]">
+      <div className="mt-10 grid min-w-0 grid-cols-1 gap-12 lg:grid-cols-[minmax(0,1fr)_360px]">
 
         {/* Cart items */}
 
-        <div className="space-y-6">
+        <div className="min-w-0 space-y-6">
           {cart.items.map((item) => {
             const product = item.product;
 
@@ -257,15 +266,15 @@ const Cart = () => {
             return (
               <div
                 key={product._id}
-                className="border-b border-stone-200 pb-6"
+                className="border-b border-[var(--vanta-border)] pb-6"
               >
-                <div className="flex gap-5">
+                <div className="flex gap-3 sm:gap-5">
 
                   {/* Image */}
 
                   <Link
                     to={`/products/${product.slug}`}
-                    className="h-32 w-32 shrink-0 overflow-hidden bg-stone-200"
+                    className="aspect-square w-16 shrink-0 self-start overflow-hidden bg-[var(--vanta-soft)] min-[380px]:w-24 sm:w-32"
                   >
                     {product.images?.[0] ? (
                       <img
@@ -284,16 +293,16 @@ const Cart = () => {
 
                   <div className="flex min-w-0 flex-1 flex-col justify-between gap-4">
 
-                    <div className="flex justify-between gap-4">
+                    <div className="flex flex-wrap justify-between gap-x-3 gap-y-1">
                       <div className="min-w-0">
                         <Link
                           to={`/products/${product.slug}`}
-                          className="font-semibold hover:underline"
+                          className="break-words font-semibold hover:underline"
                         >
                           {product.name}
                         </Link>
 
-                        <p className="mt-2 text-sm text-stone-500">
+                        <p className="mt-2 text-sm text-[var(--vanta-muted)]">
                           {formatPrice(
                             product.price
                           )}
@@ -323,15 +332,16 @@ const Cart = () => {
                       </p>
                     </div>
 
-                    <div className="flex items-center justify-between">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
 
                       {/* Quantity */}
 
-                      <div className="flex items-center border border-stone-300">
+                      <div className="flex items-center border border-[var(--vanta-border)]">
                         <button
                           type="button"
+                          aria-label="Decrease quantity"
                           disabled={
-                            isUpdating ||
+                            Boolean(updatingId) || clearing ||
                             item.quantity <= 1
                           }
                           onClick={() =>
@@ -345,14 +355,15 @@ const Cart = () => {
                           <Minus size={15} />
                         </button>
 
-                        <span className="w-10 text-center text-sm">
+                        <span className="w-7 text-center text-sm sm:w-10">
                           {item.quantity}
                         </span>
 
                         <button
                           type="button"
+                          aria-label="Increase quantity"
                           disabled={
-                            isUpdating ||
+                            Boolean(updatingId) || clearing ||
                             item.quantity >= stock ||
                             stock === 0
                           }
@@ -372,19 +383,18 @@ const Cart = () => {
 
                       <button
                         type="button"
-                        disabled={isUpdating}
+                        aria-label="Remove item"
+                        disabled={Boolean(updatingId) || clearing}
                         onClick={() =>
                           removeItem(
                             product._id
                           )
                         }
-                        className="flex items-center gap-2 text-sm text-stone-500 transition hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-40"
+                        className="flex items-center gap-2 text-sm text-[var(--vanta-muted)] transition hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-40"
                       >
                         <Trash2 size={16} />
 
-                        {isUpdating
-                          ? "Updating..."
-                          : "Remove"}
+                        <span className="hidden sm:inline">{isUpdating ? "Updating…" : "Remove"}</span>
                       </button>
                     </div>
                   </div>
@@ -396,15 +406,15 @@ const Cart = () => {
 
         {/* Summary */}
 
-        <aside className="h-fit border border-stone-200 p-6">
+        <aside className="h-fit border border-[var(--vanta-border)] p-6">
           <h2 className="font-serif text-2xl">
             Order Summary
           </h2>
 
-          <div className="mt-6 space-y-4 border-b border-stone-200 pb-5 text-sm">
+          <div className="mt-6 space-y-4 border-b border-[var(--vanta-border)] pb-5 text-sm">
 
             <div className="flex justify-between">
-              <span className="text-stone-500">
+              <span className="text-[var(--vanta-muted)]">
                 Subtotal
               </span>
 
@@ -414,7 +424,7 @@ const Cart = () => {
             </div>
 
             <div className="flex justify-between">
-              <span className="text-stone-500">
+              <span className="text-[var(--vanta-muted)]">
                 Shipping
               </span>
 
@@ -435,7 +445,7 @@ const Cart = () => {
           </div>
 
           {subtotal < 2000 && (
-            <p className="mt-4 text-xs leading-5 text-stone-500">
+            <p className="mt-4 text-xs leading-5 text-[var(--vanta-muted)]">
               Add{" "}
               {formatPrice(
                 2000 - subtotal

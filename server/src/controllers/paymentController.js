@@ -5,6 +5,24 @@ import Payment from "../models/payment.js";
 import Order from "../models/order.js";
 import Cart from "../models/cart.js";
 
+const sendPaymentOrder = (res, payment, status) => res.status(status).json({
+  success: true,
+  data: {
+    payment: {
+      id: payment._id,
+      amount: payment.amount,
+      currency: payment.currency,
+      provider: payment.provider,
+    },
+    razorpayOrder: {
+      id: payment.providerPaymentId,
+      amount: Math.round(payment.amount * 100),
+      currency: payment.currency,
+    },
+    razorpayKeyId: process.env.RAZORPAY_KEY_ID,
+  },
+});
+
 export const createPayment = async (req, res) => {
   const { orderId } = req.body;
 
@@ -77,6 +95,10 @@ export const createPayment = async (req, res) => {
     });
   }
 
+  if (payment?.providerPaymentId) {
+    return sendPaymentOrder(res, payment, 200);
+  }
+
   let razorpayOrder;
 
   try {
@@ -95,45 +117,64 @@ export const createPayment = async (req, res) => {
     });
   }
 
-  if (!payment) {
-    payment = await Payment.create({
-      order: order._id,
-      user: req.user._id,
-      amount: order.total,
-      currency: "INR",
-      provider: "razorpay",
-      providerPaymentId: razorpayOrder.id,
-      status: "pending",
-    });
+  if (payment) {
+    await Payment.updateOne(
+      { _id: payment._id, providerPaymentId: null },
+      { $set: { providerPaymentId: razorpayOrder.id, status: "pending" } },
+    );
   } else {
-    payment.provider = "razorpay";
-    payment.providerPaymentId = razorpayOrder.id;
-    payment.status = "pending";
-
-    await payment.save();
+    try {
+      await Payment.updateOne(
+        { order: order._id },
+        { $setOnInsert: {
+          user: req.user._id,
+          amount: order.total,
+          currency: razorpayOrder.currency,
+          provider: "razorpay",
+          providerPaymentId: razorpayOrder.id,
+          status: "pending",
+        } },
+        { upsert: true },
+      );
+    } catch (error) {
+      if (error.code !== 11000) throw error;
+    }
   }
 
-  return res.status(201).json({
-    success: true,
-    message: "Payment order created successfully",
-    data: {
-      payment: {
-        id: payment._id,
-        amount: payment.amount,
-        currency: payment.currency,
-        provider: payment.provider,
-      },
-
-      razorpayOrder: {
-        id: razorpayOrder.id,
-        amount: razorpayOrder.amount,
-        currency: razorpayOrder.currency,
-      },
-
-      razorpayKeyId: process.env.RAZORPAY_KEY_ID,
-    },
-  });
+  payment = await Payment.findOne({ order: order._id });
+  return sendPaymentOrder(res, payment, payment.providerPaymentId === razorpayOrder.id ? 201 : 200);
 };
+
+const confirmPayment = async (paymentId) => Payment.db.transaction(async (session) => {
+  const payment = await Payment.findById(paymentId).session(session);
+  const order = await Order.findById(payment.order).session(session);
+  if (!order || order.orderStatus === "cancelled") return null;
+  if (order.paymentStatus === "paid") return { payment, order };
+
+  payment.status = "paid";
+  payment.paidAt = new Date();
+  order.paymentStatus = "paid";
+  order.orderStatus = "confirmed";
+  order.paymentExpiresAt = null;
+  order.inventoryReserved = true;
+
+  await order.save({ session });
+  await payment.save({ session });
+
+  const cart = await Cart.findOne({ user: order.user }).session(session);
+  if (cart) {
+    const purchased = new Map(order.items.map((item) => [String(item.product), item.quantity]));
+    cart.items = cart.items
+      .map(({ product, quantity }) => ({
+        product,
+        quantity: quantity - (purchased.get(String(product)) || 0),
+      }))
+      .filter((item) => item.quantity > 0);
+    await cart.save({ session });
+  }
+
+  return { payment, order };
+});
 
 export const verifyPayment = async (req, res) => {
   const {
@@ -165,13 +206,6 @@ export const verifyPayment = async (req, res) => {
     });
   }
 
-  if (payment.status === "paid") {
-    return res.status(400).json({
-      success: false,
-      message: "Payment has already been verified",
-    });
-  }
-
   const generatedSignature = crypto
     .createHmac(
       "sha256",
@@ -183,63 +217,24 @@ export const verifyPayment = async (req, res) => {
     .digest("hex");
 
   if (generatedSignature !== razorpaySignature) {
-    payment.status = "failed";
-
-    await payment.save();
-
     return res.status(400).json({
       success: false,
       message: "Invalid payment signature",
     });
   }
 
-  const order = await Order.findOne({
-    _id: payment.order,
-    user: req.user._id,
-  });
-
-  if (!order) {
-    return res.status(404).json({
+  const result = await confirmPayment(payment._id);
+  if (!result) {
+    return res.status(409).json({
       success: false,
-      message: "Order not found",
+      message: "The order is no longer available. Contact client care if you were charged.",
     });
   }
-
-  if (order.orderStatus === "cancelled") {
-    return res.status(400).json({
-      success: false,
-      message: "This order has already been cancelled",
-    });
-  }
-  payment.status = "paid";
-  payment.paidAt = new Date();
-  
-  order.paymentStatus = "paid";
-  order.orderStatus = "confirmed";
-  
-  // Payment is complete, so the temporary payment expiry
-  // is no longer needed.
-  order.paymentExpiresAt = null;
-  
-  // Stock remains reserved because the order is now confirmed.
-  order.inventoryReserved = true;
-  
-  await payment.save();
-  await order.save();
-  
-  // Clear cart only after successful payment.
-  await Cart.findOneAndUpdate(
-    { user: req.user._id },
-    { $set: { items: [] } }
-  );
 
   return res.status(200).json({
     success: true,
     message: "Payment verified successfully",
-    data: {
-      payment,
-      order,
-    },
+    data: result,
   });
 };
 
@@ -302,38 +297,17 @@ export const handleWebhook = async (req, res) => {
         });
       }
 
-      if (payment.status !== "paid") {
-        payment.status = "paid";
-        payment.paidAt = new Date();
-
-        await payment.save();
-
-        await Order.findByIdAndUpdate(payment.order, {
-          paymentStatus: "paid",
-          orderStatus: "confirmed",
-          paymentExpiresAt: null,
-          inventoryReserved: true,
-        });
-      }
+      await confirmPayment(payment._id);
     }
 
     if (event.event === "payment.failed") {
       const paymentEntity =
         event.payload.payment.entity;
 
-      const payment = await Payment.findOne({
-        providerPaymentId: paymentEntity.order_id,
-      });
-
-      if (payment && payment.status !== "paid") {
-        payment.status = "failed";
-
-        await payment.save();
-
-        await Order.findByIdAndUpdate(payment.order, {
-          paymentStatus: "failed",
-        });
-      }
+      await Payment.updateOne(
+        { providerPaymentId: paymentEntity.order_id, status: { $ne: "paid" } },
+        { $set: { status: "failed" } },
+      );
     }
 
     return res.status(200).json({

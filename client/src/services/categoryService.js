@@ -1,9 +1,13 @@
 import api from "./api";
 
-const getCategories = async () => {
-  const response = await api.get("/categories");
+let pendingCategories;
 
-  return response.data;
+const getCategories = () => {
+  pendingCategories ??= api.get("/categories")
+    .then(({ data }) => data)
+    .finally(() => { pendingCategories = undefined; });
+
+  return pendingCategories;
 };
 
 const categoryService = {

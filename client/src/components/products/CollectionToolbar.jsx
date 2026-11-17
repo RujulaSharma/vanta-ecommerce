@@ -2,13 +2,14 @@ import { ChevronDown, SlidersHorizontal } from "lucide-react";
 import { tw } from "../../utils/twStyles.js";
 
 const CollectionToolbar = ({
+  count,
   sort,
   setSort,
   setPage,
   hasFilters,
   setShowFilters,
 }) => (
-  <div className={tw("vanta-collection-toolbar !min-h-[76px] !grid-cols-[1fr_auto] max-[640px]:!grid-cols-[auto_1fr_auto]")}>
+  <div className={tw("vanta-collection-toolbar !min-h-[76px] !grid-cols-[minmax(0,1fr)_auto]")}>
     <div className={tw("flex items-center gap-3")}>
       <button
         type="button"
@@ -23,24 +24,26 @@ const CollectionToolbar = ({
           </span>
         )}
       </button>
+      {count !== null && <p role="status" className="text-xs text-[var(--vanta-muted)]">{count} {count === 1 ? "piece" : "pieces"}</p>}
     </div>
 
     <div className={tw("vanta-sort-wrap")}>
-      <span>Sort by:</span>
+      <span className="hidden sm:inline">Sort by</span>
       <select
+        aria-label="Sort products"
+        className="min-h-10 appearance-none border border-[var(--vanta-border)] bg-[var(--vanta-surface)] pl-3 pr-8 text-xs text-[var(--vanta-text)]"
         value={sort}
         onChange={(event) => {
           setSort(event.target.value);
           setPage(1);
         }}
       >
-        <option value="newest">Featured</option>
-        <option value="popular">Popular</option>
+        <option value="newest">Newest</option>
         <option value="price_asc">Price: Low to High</option>
         <option value="price_desc">Price: High to Low</option>
         <option value="name_asc">Name: A-Z</option>
       </select>
-      <ChevronDown size={14} />
+      <ChevronDown size={14} className="pointer-events-none absolute right-2" />
     </div>
   </div>
 );

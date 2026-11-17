@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import {
   ChevronDown,
-  Gift,
   Heart,
   LayoutDashboard,
   LogOut,
@@ -26,32 +25,6 @@ const NavbarProfile = ({
   openAuth,
 }) => (
   <div className="flex items-center gap-1 sm:gap-2 xl:gap-3 shrink-0">
-    {/* 1. BOUTIQUES / STORES */}
-    <Link
-      to="/about"
-      className="group flex flex-col items-center justify-center px-2 py-1 text-[var(--vanta-muted)] hover:text-[var(--vanta-text)] transition"
-      title="Our Boutiques"
-      aria-label="Our Boutiques"
-    >
-      <MapPin size={18} strokeWidth={1.8} className="group-hover:scale-110 transition-transform" />
-      <span className="text-[10px] font-medium tracking-wide mt-1 group-hover:text-[var(--vanta-text)] transition hidden sm:inline">
-        Boutiques
-      </span>
-    </Link>
-
-    {/* 2. OFFERS */}
-    <Link
-      to="/products"
-      className="group flex flex-col items-center justify-center px-2 py-1 text-[var(--vanta-muted)] hover:text-[var(--vanta-text)] transition"
-      title="Curated Offers"
-      aria-label="Curated Offers"
-    >
-      <Gift size={18} strokeWidth={1.8} className="group-hover:scale-110 transition-transform" />
-      <span className="text-[10px] font-medium tracking-wide mt-1 group-hover:text-[var(--vanta-text)] transition hidden sm:inline">
-        Offers
-      </span>
-    </Link>
-
     {/* 3. WISHLIST */}
     <Link
       to="/wishlist"

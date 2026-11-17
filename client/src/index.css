@@ -676,3 +676,82 @@ html:not(.dark) .vanta-reference-navbar .vanta-mega-feature strong span { color:
   .vanta-mobile-menu,
   .vanta-mobile-menu-item svg { animation: none; transition: none; }
 }
+/* Shared storefront typography and catalog surfaces */
+@theme {
+  --font-serif: "Playfair Display", Georgia, serif;
+  --font-sans: "DM Sans", system-ui, sans-serif;
+}
+
+:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
+
+.vanta-catalog-banner h1 {
+  overflow-wrap: anywhere;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.vanta-catalog-banner > div:nth-child(2) {
+  background: linear-gradient(90deg, rgb(22 17 14 / .85), rgb(22 17 14 / .24));
+}
+
+.vanta-catalog-card .vanta-collection-product-image { aspect-ratio: 4 / 5; }
+.vanta-catalog-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform .65s cubic-bezier(.2,.7,.2,1);
+}
+
+@media (hover: hover) {
+  .vanta-catalog-card:hover img { transform: scale(1.045); }
+}
+
+.vanta-catalog-card .vanta-collection-product-meta { padding: .8rem 0; }
+.vanta-catalog-card h3 {
+  font-family: var(--font-serif);
+  font-size: clamp(.98rem, 1.5vw, 1.2rem);
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.vanta-catalog-card .vanta-collection-product-meta p { font-size: .875rem; }
+.vanta-catalog-card .vanta-product-heart { width: 40px; height: 40px; }
+.vanta-catalog-card .vanta-rating { display: flex; gap: .3rem; color: var(--vanta-muted); }
+.vanta-category-pill { font-size: .7rem; min-height: 40px; }
+.vanta-filter-block input:not([type="range"]):not([type="checkbox"]) { min-height: 38px; }
+.vanta-filter-heading h3 { font-family: var(--font-serif); font-size: 1.5rem; }
+.vanta-filter-heading button { min-width: 40px; min-height: 40px; display: grid; place-items: center; }
+
+@media (min-width: 901px) {
+  .vanta-collection-sidebar { top: 170px; max-height: calc(100dvh - 188px); overflow-y: auto; }
+  .vanta-filter-heading button { display: none; }
+}
+
+@media (min-width: 901px) and (max-width: 1150px) {
+  .vanta-collection-grid { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+}
+
+@media (max-width: 900px) {
+  .vanta-collection-sidebar { visibility: hidden; height: 100dvh; }
+  .vanta-collection-sidebar.is-open { visibility: visible; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .vanta-catalog-card img { transition: none; }
+  .vanta-catalog-card:hover img { transform: none; }
+}
+
+.vanta-auth-heading h2 { font-family: var(--font-serif); font-size: 2rem; line-height: 1.2; }
+.vanta-auth-field > span, .vanta-auth-switch { font-size: .75rem; }
+.vanta-auth-switch button { text-decoration: underline; text-underline-offset: 3px; }
+.vanta-auth-input-wrap input {
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  color: var(--vanta-text);
+  background: transparent;
+  outline: none;
+}

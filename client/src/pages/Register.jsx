@@ -1,12 +1,13 @@
 import { tw } from "../utils/twStyles.js";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, LockKeyhole, Mail, UserRound } from "lucide-react";
 import useAuthStore from "../store/authStore";
 import { useAuthModal } from "../context/AuthModalContext";
 
 const Register = () => {
   const navigate = useNavigate();
+  const { pathname, search, hash, state } = useLocation();
   const register = useAuthStore((state) => state.register);
   const { closeAuth, switchAuth } = useAuthModal();
 
@@ -35,7 +36,7 @@ const Register = () => {
     try {
       await register(formData);
       closeAuth();
-      navigate("/", { replace: true });
+      navigate(state?.from || { pathname, search, hash }, { replace: true });
     } catch (requestError) {
       setError(
         requestError.response?.data?.message ||
@@ -49,10 +50,7 @@ const Register = () => {
   return (
     <div className={tw("vanta-auth-content")}>
       <div className={tw("vanta-auth-heading")}>
-        <p className={tw("vanta-auth-kicker")}>VANTA BAGS</p>
         <h2 id="vanta-auth-title">Create account</h2>
-        <p>Welcome to VANTA.</p>
-        <small>Create your account to continue</small>
       </div>
 
       {error && <div className={tw("vanta-auth-error")}>{error}</div>}
@@ -120,12 +118,11 @@ const Register = () => {
         </button>
       </form>
 
-      <div className={tw("vanta-auth-divider")}><span>secure checkout ready</span></div>
 
       <p className={tw("vanta-auth-switch")}>
         Already have an account?{" "}
         <button type="button" onClick={() => switchAuth("login")}>
-          Login
+          Sign in
         </button>
       </p>
     </div>

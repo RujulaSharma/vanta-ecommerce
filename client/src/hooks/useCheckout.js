@@ -7,33 +7,30 @@ import paymentService from "../services/paymentService";
 import cartService from "../services/cartService";
 import useAuthStore from "../store/authStore";
 
-const loadRazorpayScript = () =>
-  new Promise((resolve) => {
-    if (window.Razorpay) {
-      resolve(true);
-      return;
-    }
+let razorpayScriptPromise;
 
-    const existingScript = document.querySelector(
-      'script[src="https://checkout.razorpay.com/v1/checkout.js"]'
-    );
-
-    if (existingScript) {
-      existingScript.addEventListener("load", () => resolve(true), {
-        once: true,
-      });
-      existingScript.addEventListener("error", () => resolve(false), {
-        once: true,
-      });
-      return;
-    }
-
+const loadRazorpayScript = () => {
+  if (window.Razorpay) return Promise.resolve();
+  razorpayScriptPromise ??= new Promise((resolve, reject) => {
     const script = document.createElement("script");
     script.src = "https://checkout.razorpay.com/v1/checkout.js";
-    script.onload = () => resolve(true);
-    script.onerror = () => resolve(false);
+    const fail = () => {
+      clearTimeout(timeout);
+      script.remove();
+      razorpayScriptPromise = undefined;
+      reject(new Error("Payment could not load. Please try again."));
+    };
+    const timeout = setTimeout(fail, 15000);
+    script.onload = () => {
+      clearTimeout(timeout);
+      if (window.Razorpay) resolve();
+      else fail();
+    };
+    script.onerror = fail;
     document.body.appendChild(script);
   });
+  return razorpayScriptPromise;
+};
 
 const useCheckout = () => {
   const user = useAuthStore((state) => state.user);
@@ -47,12 +44,14 @@ const useCheckout = () => {
   const [selectedAddressId, setSelectedAddressId] = useState(null);
   const [showAddressForm, setShowAddressForm] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
   const [savingAddress, setSavingAddress] = useState(false);
   const [placingOrder, setPlacingOrder] = useState(false);
 
   const loadCheckout = useCallback(async () => {
     try {
       setLoading(true);
+      setLoadError("");
 
       const [cartData, addressData, pendingOrderData] =
         await Promise.all([
@@ -69,11 +68,7 @@ const useCheckout = () => {
       setCart(loadedCart);
       setAddresses(loadedAddresses);
 
-      // A pending order is recoverable only when the cart is empty.
-      // This prevents mixing a new cart with an older reserved order.
-      setPendingOrder(
-        !loadedCart?.items?.length ? loadedPendingOrder : null
-      );
+      setPendingOrder(loadedPendingOrder);
 
       const defaultAddress = loadedAddresses.find(
         (address) => address.isDefault
@@ -87,10 +82,7 @@ const useCheckout = () => {
         setSelectedAddressId(null);
       }
     } catch (error) {
-      toast.error(
-        error.response?.data?.message ||
-          "Unable to load checkout"
-      );
+      setLoadError(error.response?.data?.message || "Please try again in a moment.");
     } finally {
       setLoading(false);
     }
@@ -114,8 +106,6 @@ const useCheckout = () => {
   );
 
   const checkoutCart = useMemo(() => {
-    if (cart?.items?.length) return cart;
-
     if (!pendingOrder?.items?.length) return cart;
 
     return {
@@ -132,7 +122,7 @@ const useCheckout = () => {
   }, [cart, pendingOrder]);
 
   const subtotal = useMemo(() => {
-    if (pendingOrder && !cart?.items?.length) {
+    if (pendingOrder) {
       return Number(pendingOrder.subtotal || 0);
     }
 
@@ -146,13 +136,13 @@ const useCheckout = () => {
     );
   }, [cart, pendingOrder]);
 
-  const shipping = pendingOrder && !cart?.items?.length
+  const shipping = pendingOrder
     ? Number(pendingOrder.shippingFee || 0)
     : subtotal >= 2000
       ? 0
       : 100;
 
-  const total = pendingOrder && !cart?.items?.length
+  const total = pendingOrder
     ? Number(pendingOrder.total || 0)
     : subtotal + shipping;
 
@@ -234,23 +224,19 @@ const useCheckout = () => {
       throw new Error("Unable to initialize payment");
     }
 
-    const loaded = await loadRazorpayScript();
-
-    if (!loaded) {
-      throw new Error("Unable to load Razorpay");
-    }
+    await loadRazorpayScript();
 
     const options = {
       key: paymentData.data?.razorpayKeyId,
       amount: razorpayOrder.amount,
       currency: razorpayOrder.currency || "INR",
-      name: "Vanta Bags",
+      name: "VANTA",
       description: `Order #${order._id}`,
       order_id: razorpayOrder.id,
       prefill: {
         name: user?.name || "",
         email: user?.email || "",
-        contact: selectedAddress?.phone || order.shippingAddress?.phone || "",
+        contact: order.shippingAddress?.phone || selectedAddress?.phone || "",
       },
       theme: {
         color: "#1c1917",
@@ -286,7 +272,6 @@ const useCheckout = () => {
     const razorpay = new window.Razorpay(options);
 
     razorpay.on("payment.failed", () => {
-      setPlacingOrder(false);
       toast.error("Payment failed. You can retry this order.");
     });
 
@@ -308,6 +293,10 @@ const useCheckout = () => {
       setPlacingOrder(true);
 
       let order = pendingOrder;
+      if (order?.paymentExpiresAt && Date.parse(order.paymentExpiresAt) <= Date.now()) {
+        await loadCheckout();
+        throw new Error("The reservation expired. Review your bag and try again.");
+      }
 
       if (!order) {
         const orderData = await orderService.createOrder(
@@ -340,7 +329,10 @@ const useCheckout = () => {
     addresses,
     selectedAddressId,
     selectedAddress,
+    pendingOrder,
     loading,
+    loadError,
+    loadCheckout,
     savingAddress,
     placingOrder,
     showAddressForm,

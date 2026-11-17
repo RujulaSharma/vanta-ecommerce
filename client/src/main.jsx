@@ -1,6 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
+import { domAnimation, LazyMotion, MotionConfig } from "framer-motion";
 import App from "./App.jsx";
 import { AuthModalProvider } from "./context/AuthModalContext.jsx";
 import ErrorBoundary from "./components/ErrorBoundary.jsx";
@@ -29,7 +30,11 @@ createRoot(document.getElementById("root")).render(
     <BrowserRouter>
       <AuthModalProvider>
         <ErrorBoundary>
-          <App />
+          <MotionConfig reducedMotion="user">
+            <LazyMotion features={domAnimation} strict>
+              <App />
+            </LazyMotion>
+          </MotionConfig>
         </ErrorBoundary>
       </AuthModalProvider>
       <ToastProvider />

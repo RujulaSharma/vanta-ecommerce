@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { Routes, Route, Link } from "react-router-dom";
 
 import MainLayout from "./layouts/MainLayout";
@@ -6,28 +7,29 @@ import AdminRoute from "./components/AdminRoute";
 import AdminLayout from "./layouts/AdminLayout";
 
 import Home from "./pages/Home";
-import Products from "./pages/Products";
-import Category from "./pages/Category";
-import About from "./pages/About";
-import ProductDetails from "./pages/ProductDetails";
-import AuthEntry from "./pages/AuthEntry";
-import Cart from "./pages/Cart";
-import Checkout from "./pages/Checkout";
-import OrderDetails from "./pages/OrderDetails";
-import Orders from "./pages/Orders";
-import Account from "./pages/Account";
-import Addresses from "./pages/Addresses";
-import OrderSuccess from "./pages/OrderSuccess";
-import Wishlist from "./pages/Wishlist";
-import RecentlyViewed from "./pages/RecentlyViewed";
+const Products = lazy(() => import("./pages/Products"));
+const Category = lazy(() => import("./pages/Category"));
+const About = lazy(() => import("./pages/About"));
+const ProductDetails = lazy(() => import("./pages/ProductDetails"));
+const AuthEntry = lazy(() => import("./pages/AuthEntry"));
+const Cart = lazy(() => import("./pages/Cart"));
+const Checkout = lazy(() => import("./pages/Checkout"));
+const OrderDetails = lazy(() => import("./pages/OrderDetails"));
+const Orders = lazy(() => import("./pages/Orders"));
+const Account = lazy(() => import("./pages/Account"));
+const Addresses = lazy(() => import("./pages/Addresses"));
+const OrderSuccess = lazy(() => import("./pages/OrderSuccess"));
+const Wishlist = lazy(() => import("./pages/Wishlist"));
+const RecentlyViewed = lazy(() => import("./pages/RecentlyViewed"));
 
-import AdminDashboard from "./pages/admin/AdminDashboard";
-import AdminOrders from "./pages/admin/AdminOrders";
-import AdminOrderDetails from "./pages/admin/AdminOrderDetails";
-import AdminProducts from "./pages/admin/AdminProducts";
+const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
+const AdminOrders = lazy(() => import("./pages/admin/AdminOrders"));
+const AdminOrderDetails = lazy(() => import("./pages/admin/AdminOrderDetails"));
+const AdminProducts = lazy(() => import("./pages/admin/AdminProducts"));
 
 function App() {
   return (
+    <Suspense fallback={<p role="status" className="p-8 text-center">Loading…</p>}>
     <Routes>
       <Route element={<MainLayout />}>
         {/* Public Routes */}
@@ -82,6 +84,7 @@ function App() {
         />
       </Route>
     </Routes>
+    </Suspense>
   );
 }
 

@@ -10,6 +10,11 @@ import { apiLimiter } from "./middleware/rateLimiter.js";
 
 const app = express();
 
+// Trust the first reverse proxy in production
+if (process.env.NODE_ENV === "production") {
+  app.set("trust proxy", 1);
+}
+
 app.use(helmet());
 app.use(cors(corsOptions));
 app.get("/", (req, res) => {

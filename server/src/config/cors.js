@@ -4,6 +4,7 @@ const allowedOrigins = [
   "http://localhost:3000",
   "https://vanta-bags-ecomm-1.onrender.com",
   "https://vanta-ecommerce.vercel.app",
+  "https://vanta-ecommerce-iota.vercel.app",
 ];
 
 if (process.env.CLIENT_URL) {

@@ -126,7 +126,14 @@ describe("Render Proxy & Rate Limiting Verification", () => {
     testApp.use(cors(corsOptions));
     testApp.get("/api/test-cors", (req, res) => res.json({ ok: true }));
 
-    // Production Vercel domain
+    // Production Vercel domain (intended deployment)
+    const resIota = await request(testApp)
+      .get("/api/test-cors")
+      .set("Origin", "https://vanta-ecommerce-iota.vercel.app");
+    expect(resIota.headers["access-control-allow-origin"]).toBe("https://vanta-ecommerce-iota.vercel.app");
+    expect(resIota.headers["access-control-allow-credentials"]).toBe("true");
+
+    // Standard Vercel domain
     const resProd = await request(testApp)
       .get("/api/test-cors")
       .set("Origin", "https://vanta-ecommerce.vercel.app");
